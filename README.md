@@ -5,7 +5,7 @@
 [更新日志](https://github.com/Lemonxu/vue-table-row-edit/releases)
 
 ------------------------------------------------------------------------------
-###Install
+### Install
 ```$xslt
 npm install vue-table-row-edit --save
 ```
@@ -30,7 +30,7 @@ Vue.use(VueTableRowEdit)
 <tr><td>rules</td><td>表单验证规则</td><td>object</td><td>---</td><td>---</td></tr>
 </tbody></table>
 
-####Table Events
+#### Table Events
 <table><thead><tr>
 <th>事件名</th><th>说明</th><th>参数</th></tr>
 </thead><tbody>
@@ -53,7 +53,7 @@ Vue.use(VueTableRowEdit)
 </tbody></table>
 
 -----------------------------------------------------------------
-####  Example
+#### Example
 ```
 <template>
 	<l-table
