@@ -17,8 +17,8 @@
                         <l-table-row :rowIndex="rowIndex" :row="row" :prop="column.prop" :isEdit="getIsEdit(rowIndex)" :rules="rules" :rule="rules[column.prop]" :column="column" >
                         </l-table-row>
                     </td>
-                    <td class="lemon-cell">
-                        <div v-if="type==='edit'">
+                    <td class="lemon-cell" v-if="type==='edit'">
+                        <div>
                             <button 
                             @click="handleEdit(rowIndex,row,$event)" 
                             v-if="!getIsEdit(rowIndex)" 

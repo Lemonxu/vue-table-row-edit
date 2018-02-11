@@ -1,8 +1,8 @@
-import LTable from './table';
+import LTable from './table.vue';
 
 /* istanbul ignore next */
-ElTableColumnEdit.install = function(Vue) {
-  Vue.component(ElTableColumnEdit.name, ElTableColumnEdit);
+LTable.install = function(Vue) {
+  Vue.component(LTable.name, LTable);
 };
 
-export default ElTableColumnEdit;
+export default LTable;

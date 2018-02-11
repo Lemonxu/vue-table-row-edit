@@ -1,21 +1,24 @@
 # element-table-column-edit
 
-> this is a plugin for element-ui table edit
-
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
+## 使用组件
+安装 npm 包
+```$xslt
+npm install element-table-column-edit --save
 ```
+引用 element-table-column-edit 插件
+```$xslt
+import ElementTableColumnEdit from 'element-table-column-edit'
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+Vue.use(ElementTableColumnEdit)
+```
+在组件中使用
+
+```
+$xslt 
+<el-table-column-edit 
+        prop="birth" 
+        label="出生年月" 
+        :edit="true" 
+        propType="dateTimePicker">
+```
+具体使用待完善。。
