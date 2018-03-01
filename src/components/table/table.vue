@@ -93,6 +93,14 @@ export default {
             validateMessage:'',
         }
     },
+    watch:{
+        data: {
+            immediate: true,
+            handler(val) {
+                this.store.states.data=val;
+            }
+        },
+    },
     computed:{},
     methods:{
         isRequired(head){
