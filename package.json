@@ -1,6 +1,6 @@
 {
   "name": "vue-table-row-edit",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "this is a plugin for table edit",
   "author": "Lemonxu <yunfeng7@foxmail.com>",
   "private": false,
@@ -27,8 +27,8 @@
   "license": "MIT",
   "homepage": "https://github.com/Lemonxu/vue-table-row-edit/blob/master/README.md",
   "dependencies": {
-    "vue": "^2.5.2",
-    "element-ui":"^2.0.1",
+    "vue": "^2.5.13",
+    "element-ui":"^2.0.11",
     "deepmerge": "^1.2.0",
     "throttle-debounce": "^1.0.1",
     "async-validator": "~1.8.1"

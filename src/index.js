@@ -1,9 +1,11 @@
 import LTable from './components/table/index.js'
 import LTableColumn from './components/table-column/index.js'
+import LInput from './components/input/index.js'
 
 const components = [
 	LTable,
-	LTableColumn
+	LTableColumn,
+	LInput
 ]
 
 const install =function (Vue){
@@ -21,8 +23,9 @@ if (typeof window !== 'undefined' && window.Vue) {
 };
 
 export default {
-	version: '1.0.1',
+	version: '1.0.3',
 	install,
 	LTable,
-	LTableColumn
+	LTableColumn,
+	LInput
 };

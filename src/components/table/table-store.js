@@ -1,3 +1,5 @@
+import { Table } from "element-ui";
+import Vue from 'vue'
 
 const TableStore=function(table,initialState={}){
 
@@ -22,5 +24,14 @@ TableStore.prototype.setStates=function(initialState={}){
         }
     }
 }
+
+TableStore.prototype.commit = function(name, ...args) {
+    const mutations = this.mutations;
+    if (mutations[name]) {
+      mutations[name].apply(this, [this.states].concat(args));
+    } else {
+      throw new Error(`Action not found: ${name}`);
+    }
+};
 
 export default TableStore;

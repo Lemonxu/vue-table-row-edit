@@ -1,28 +1,29 @@
 <template>
     <section>
+        <button v-if="add" size="mini" type="primary" icon="el-icon-plus" @click="handleAdd" class="button--primary">新增</button>
         <table class="table-border table__header">
             <thead>
                 <tr>
-                    <th v-for="(head,index) in store.states.columns" :key="index" class="lemon-cell">
+                    <th v-for="(head,index) in store.states.columns" :key="index" class="lemon-cell" style="width:180px">
                         <label style="color:red" v-if="isRequired(head)">*</label>
                         {{head.label}}
                     </th>
-                    <th class="lemon-cell" v-if="type==='edit'">操作</th>
+                    <th class="lemon-cell" style="width:150px;min-width:150px">操作</th>
                 </tr>
             </thead>
             <tbody>
-                <slot :data="store"></slot>
-                <tr v-for="(row,rowIndex) in store.states.data" :key="rowIndex" @click="handleCell(store.states,$event)">
+                <slot :data="store" ></slot>
+                <tr v-for="(row,rowIndex) in data" :key="rowIndex" @click="handleCell(store.states,$event)" >
                     <td v-for="(column,columnIndex) in store.states.columns"  :key="columnIndex" class="lemon-cell" >
-                        <l-table-row :rowIndex="rowIndex" :row="row" :prop="column.prop" :isEdit="getIsEdit(rowIndex)" :rules="rules" :rule="rules[column.prop]" :column="column" >
+                        <l-table-row :rowIndex="rowIndex" :row="row" :prop="column.prop" v-model="row[column.prop]" :isEdit="getIsEdit(rowIndex)" :rules="rules" :rule="rules[column.prop]" :column="column">
                         </l-table-row>
                     </td>
-                    <td class="lemon-cell" v-if="type==='edit'">
-                        <div>
+                    <td class="lemon-cell" >
+                        <div v-if="editOperater">
                             <button 
                             @click="handleEdit(rowIndex,row,$event)" 
                             v-if="!getIsEdit(rowIndex)" 
-                            class="button--primary">编辑</button>
+                            class="button--primary">修改</button>
                             <button 
                             @click="handleDelete(rowIndex,row,$event)" 
                             v-if="!getIsEdit(rowIndex)"
@@ -36,6 +37,17 @@
                             v-if="getIsEdit(rowIndex)"
                             class="button--danger">取消</button>
                         </div>
+                        <div v-else>
+                            <button 
+                            @click="handleAddCancel(rowIndex,row,$event)" 
+                            v-if="getIsEdit(rowIndex)"
+                            class="button--danger">取消</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="store.states.data.length==0">
+                    <td :colspan="store.states.columns.length+1">
+                        暂无数据
                     </td>
                 </tr>
             </tbody>
@@ -81,6 +93,13 @@ export default {
             default:function(){
                 return {}
             }
+        },
+        editOperater:Boolean,
+        add:{
+            type:Boolean,
+            default:() => {
+                return true
+            }
         }
     },
     data(){
@@ -90,19 +109,32 @@ export default {
         return{
             store,
             editList:[],
+            addList:[],
             validateMessage:'',
+            copyOldList:[]
         }
     },
     watch:{
         data: {
             immediate: true,
-            handler(val) {
+            handler(val,oldVal) {
                 this.store.states.data=val;
+                this.editList=[];
             }
         },
     },
-    computed:{},
+    computed:{
+    },
     methods:{
+        getTypeList(){
+            if(this.type=="add"){
+                return this.addList;
+            }else if(this.type=="edit"){
+                return this.editList;
+            }else{
+                return [...this.addList,...this.editList];
+            }
+        },
         isRequired(head){
             let required=false;
             let items=this.rules?this.rules[head.prop]:'';
@@ -125,12 +157,13 @@ export default {
             return required
         },
         getIsEdit(rowIndex){
-            let editItem=this.editList.find((val) => { return val===rowIndex });
-            if(typeof editItem === 'undefined'){
+            let item=this.getTypeList().find((val) => { return val===rowIndex });
+            if(typeof item === 'undefined'){
                 return false
             }
             return true
         },
+        //单行提交事件
         handleSuccess(rowIndex,row,event){
             let itemStates=[];
             this.$emit('validator-'+rowIndex,(validateState) => {
@@ -143,59 +176,123 @@ export default {
                     if(state){
                         let editItem=this.editList.find((val) => { return val===rowIndex });
                         if(editItem!=='undefined') this.editList.remove(editItem);
+                        let addItem=this.addList.find((val) => { return val===rowIndex });
+                        if(addItem!=='undefined') this.addList.remove(addItem);
+                        let copyOldItem=this.copyOldList.find((val) => { return val.id===rowIndex });
+                        if(copyOldItem){ this.copyOldList.remove(copyOldItem); }
                     }
-                    console.log(row,'完成')
                 });
             }
             event.cancelBubble=true;
         },
+        //行内取消事件
         handleCancel(rowIndex,row,event){
             this.$emit('resetValidate-'+rowIndex)
             let editItem=this.editList.find((val) => { return val===rowIndex });
-            if(editItem!=='undefined') this.editList.remove(editItem);
+            if(editItem||editItem==0){
+                let copyOldItem=this.copyOldList.find((val) => { return val.id===rowIndex });
+                if(copyOldItem){
+                    Object.assign(row,copyOldItem.row);
+                    this.copyOldList.remove(copyOldItem);
+                    this.editList.remove(editItem);
+                }
+            }else{
+                let addItem=this.addList.find((val) => { return val===rowIndex });
+                if(addItem||addItem==0){
+                    this.data.remove(row);
+                    this.addList.remove(this.addList[this.addList.length-1]);
+                } 
+            }
         },
+        //新增行内取消事件
+        handleAddCancel(rowIndex,row,event){
+            let addItem=this.addList.find((val) => { return val===rowIndex });
+            if(addItem!=='undefined'){
+                this.data.remove(row);
+                this.addList.remove(this.addList[this.addList.length-1]);
+            } 
+        },
+        //行内删除事件
         handleDelete(rowIndex,row,event){
             this.$emit('delete',row,(state) => {
                 if(state){
                     this.data.remove(row);
                 }
-                console.log(row,'删除成功')
             });
             event.cancelBubble=true;
         },
+        //行内编辑事件
         handleEdit(rowIndex,row,event){
             let editItem=this.editList.find((val) => { return val===rowIndex });
-            if(!editItem) this.editList.push(rowIndex)
+            if(!editItem) this.editList.push(rowIndex);
+            let copyOldItem=this.copyOldList.find((val) => { return val.id===rowIndex });
+            if(!copyOldItem) this.copyOldList.push({id:rowIndex,row:JSON.parse(JSON.stringify(row))});
         },
         //为列绑定当前行
         handleCell(column,row,event){
             this.$set(column,'value',row[column.prop]);
+        },
+        //表添加事件
+        handleAdd(){
+            this.$emit('add',(item) => {
+                let rowIndex=this.editOperater?this.store.states.data.length-1:this.store.states.data.length;
+                let addItem=this.addList.find((val) => { return val===rowIndex });
+                if(!addItem) this.addList.push(rowIndex)
+            })
+        },
+        //全部行验证事件
+        validate(callback){
+            let validatorStates=[];
+            this.getTypeList().map((editItem) => {
+                let itemStates=[];
+                this.$emit('validator-'+editItem,(validateState) => {
+                    itemStates.push(validateState)
+                })
+                let items=itemStates.find((item) => { return !item });
+                if(items==false) validatorStates.push(false);
+                else validatorStates.push(true);
+            });
+            let returnValidate=validatorStates.find((item) => { return !item });
+            if(returnValidate==false) callback(false)
+            else callback(true);
+        },
+        //全部行验证重置事件
+        resetFields(callback){
+            let itemList=[];
+            this.getTypeList().map((editItem) => {
+                this.$emit('resetValidate-'+editItem)
+            })
         }
     },
     created(){
         Object.assign(columnStore,this.store);
     },
     mounted(){
-        this.$parent.$on('validator',(callback) => {
-            let validatorStates=[];
-            this.editList.map((editItem) => {
-                let itemStates=[];
-                this.$emit('validator-'+editItem,(validateState) => {
-                    itemStates.push(validateState)
-                })
-                 let items=itemStates.find((item) => { return !item });
-                 if(items==false) validatorStates.push(false);
-                 else validatorStates.push(true);
-            });
-            let returnValidate=validatorStates.find((item) => { return !item });
-            if(returnValidate==false) callback(false)
-            else callback(true);
+        let columns=[];
+        this.$children.map((child) => {
+            columns.push(child.column);
         })
-        this.$parent.$on('resetValidate',(callback) => {
-            this.editList.map((editItem) => {
-                this.$emit('resetValidate-'+editItem)
-            })
-        })
+        this.store.states.columns=columns;
+        // this.$parent.$on('validator',(callback) => {
+        //     let validatorStates=[];
+        //     this.editList.map((editItem) => {
+        //         let itemStates=[];
+        //         this.$emit('validator-'+editItem,(validateState) => {
+        //             itemStates.push(validateState)
+        //         })
+        //          let items=itemStates.find((item) => { return !item });
+        //          if(items==false) validatorStates.push(false);
+        //          else validatorStates.push(true);
+        //     });
+        //     let returnValidate=validatorStates.find((item) => { return !item });
+        //     if(returnValidate==false) callback(false)
+        //     else callback(true);
+        // })
+        // this.$parent.$on('resetValidate',(callback) => {
+        //     this.editList.map((editItem) => {
+        //         this.$emit('resetValidate-'+editItem)
+        //     })
+        // })
     }
 }
 </script>
