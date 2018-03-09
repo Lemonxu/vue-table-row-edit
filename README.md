@@ -68,18 +68,18 @@ new Vue({
 <tr><td>prop</td><td>对应列内容的字段名</td><td>String</td><td>---</td><td>---</td></tr>
 <tr><td>propType</td><td>对应列内容的字段类型,即行内编辑框的类型</td><td>String</td><td>input/date/number/select</td><td>input</td></tr>
 <tr><td>label</td><td>显示的标题</td><td>String</td><td>---</td><td>---</td></tr>
-<tr><td>options</td><td>当仅当type='select'时使用，为下拉框数据</td><td>Array</td><td>---</td><td>---</td></tr>
-<tr><td>props</td><td>当仅当type='select'时使用,</td><td>Object</td><td>label:下拉框显示的字段，String；<br/>value:选择框选择的字段,String；<br/>labelProp:该列下不选择时需要显示的字段,String</td><td>{label:'label',value:'id',labelProp:false}</td></tr>
+<tr><td>options</td><td>当仅当propType='select'时使用，为下拉框数据</td><td>Array</td><td>---</td><td>---</td></tr>
+<tr><td>props</td><td>当仅当propType='select'时使用,</td><td>Object</td><td>label:下拉框显示的字段，String；<br/>value:选择框选择的字段,String；<br/>labelProp:该列下不选择时需要显示的字段,String</td><td>{label:'label',value:'id',labelProp:false}</td></tr>
 <tr><td>onlyShow</td><td>当前列是否仅为展示状态</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
-<tr><td>clearable</td><td>是否可以清空选项,当type='number'时无效</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
-<tr><td>filterable</td><td>是否可搜索,当type='select'时有用</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
+<tr><td>clearable</td><td>是否可以清空选项,当propType='number'时无效</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
+<tr><td>filterable</td><td>是否可搜索,当propType='select'时有用</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
 </tbody></table>
 
 #### TableColumn Events
 <table><thead><tr>
 <th>事件名</th><th>说明</th><th>回调参数</th></tr>
 </thead><tbody>
-<tr><td>change</td><td>值改变时触发</td><td>(value,row,item) <br/>value:选中的值，row:该行的数据，item:选择框选中的对象，仅在type='select'时有值</td></tr>
+<tr><td>change</td><td>值改变时触发</td><td>(value,row,item) <br/>value:选中的值，row:该行的数据，item:选择框选中的对象，仅在propType='select'时有值</td></tr>
 </tbody></table>
 
 
@@ -103,7 +103,9 @@ new Vue({
           prop="sex"
           propType="select"
           label="性别"
-          :options="[{label:'女',value:'女'},{label:'男',value:'男'}]"
+          :options="selectOptions"
+          :props="{label:'name',value:'id',labelProp:'productName'}" 
+          filterable
           ></l-table-column>
           <l-table-column
           prop="age"
@@ -115,9 +117,7 @@ new Vue({
 <script>
 export default {
   name: 'app',
-  components: {
-    
-  },
+  components: {},
   data () {
     return {
       msg: '表格展示',
@@ -126,11 +126,10 @@ export default {
     }
   },
   methods:{
-    getCode(code) {
-        console.log(code)
-    },
-    handleAdd(){
-      this.data.push({name:'',sex:'',birth:'',hobby:'',age:0,isEdit:true})
+    handleAdd(callback){
+      let item={name:'',sex:'',birth:'',hobby:'',age:0,isEdit:true}
+      this.data.push(item);
+      callback(item);
     },
     handleClick(row){
       console.log(row)
