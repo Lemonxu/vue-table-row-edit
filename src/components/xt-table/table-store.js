@@ -1,29 +1,29 @@
 import { Table } from "element-ui";
-import Vue from 'vue'
+import Vue from "vue";
 
-const TableStore=function(table,initialState={}){
+const TableStore = function(table, initialState = {}) {
 
-    this.table=table;
+    this.table = table;
 
-    this.states={
-        columns:[],
-        data:[],
-    }
+    this.states = {
+        columns: [],
+        data: []
+    };
 
-    for (let prop in initialState) {
+    for (const prop in initialState) {
         if (initialState.hasOwnProperty(prop) && this.states.hasOwnProperty(prop)) {
             this.states[prop] = initialState[prop];
         }
     }
-}
+};
 
-TableStore.prototype.setStates=function(initialState={}){
-    for (let prop in initialState) {
+TableStore.prototype.setStates = function(initialState = {}) {
+    for (const prop in initialState) {
         if (initialState.hasOwnProperty(prop) && this.states.hasOwnProperty(prop)) {
             this.states[prop] = initialState[prop];
         }
     }
-}
+};
 
 TableStore.prototype.commit = function(name, ...args) {
     const mutations = this.mutations;

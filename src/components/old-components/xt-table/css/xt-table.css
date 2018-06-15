@@ -1,0 +1,72 @@
+.lemon-cell{
+  height: 1rem;
+}
+table {
+  border: 1px solid #ccc;
+  width: 100%;
+  margin:0;
+  padding:0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0 auto;
+}
+table tr {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+table th, table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+table th {
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+  background-color: #eef1f6;
+}
+button{
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-color: #dcdfe6;
+  color: #606266;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: .1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.button--primary {
+  color: #fff;
+  background-color: #1885dd;
+  border-color: #1885dd;
+}
+.button--warning {
+  color: #fff;
+  background-color: #e6a23c;
+  border-color: #e6a23c;
+}
+.button--danger {
+  color: #fff;
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+}
+.button--success {
+  color: #fff;
+  background-color: #67c23a;
+  border-color: #67c23a;
+}
