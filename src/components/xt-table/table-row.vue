@@ -1,305 +1,150 @@
 <template>
-  <section>
-    <div  v-if="(!isEdit)||(column.onlyShow)">
-      <!--选择框值显示-->
-      <label
-        :class="[
-                    'cell','el-tooltip',
-                   {'xt-text-hidden':column.showOverflowTooltip}
-                   ]"
-        :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-        :title="row[column.props.labelProp]"
-        v-if="column.propType==='select'&&column.props.labelProp">
-        {{row[column.props.labelProp]}}
-      </label>
-      <!--布尔值显示-->
-      <label
-        :class="[
-                    'cell','el-tooltip',
-                   {'xt-text-hidden':column.showOverflowTooltip}
-                   ]"
-        :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-        :title="row[column.props.labelProp]"
-        v-else-if="column.propType==='boolean'">
-        {{getBooleanLabel()}}
-      </label>
-      <!--checkbox选择框显示-->
-      <label
-        :class="[
-                    'cell','el-tooltip',
-                   {'xt-text-hidden':column.showOverflowTooltip}
-                   ]"
-        :title="row[column.props.labelProp]"
-        v-else-if="column.propType==='checkbox'">
-        <el-checkbox v-model="row[prop]" :disabled="true"></el-checkbox>
-      </label>
-      <!--默认显示值-->
-      <label v-else
-             :class="[
-                    'cell','el-tooltip',
-                   { 'xt-text-hidden': column.showOverflowTooltip }
-                   ]"
-             :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-             :title="row[prop]">
-        {{value}}
-      </label>
-    </div>
-    <div v-if="isEdit&&(!column.onlyShow)" >
-      <slot :scope="row"></slot>
-      <!--文本输入框-->
-      <el-input
-        v-if="column.propType==='default'||column.propType==='input'"
-        v-model="row[prop]"
-        @change="handleChange"
-        size="mini"
-        :class="[{
-                    'is-error': validateState === 'error',
-                },
-                validateState==='error'?'error':'success',
-                ]"
-        :maxlength="column.maxlength"
-        :minlength="column.minlength"
-        :clearable="column.clearable"
-        :placeholder="column.placeholder"
-        :disabled="column.disabled"></el-input>
-      <!--时间选择框-->
-      <el-date-picker
-        v-else-if="column.propType==='date'"
-        v-model="row[prop]"
-        @change="handleChange"
-        type="date"
-        :placeholder="column.placeholder"
-        :class="[{
-                    'is-error': validateState === 'error',
-                },
-                validateState==='error'?'error':'success',
-                ]"
-        :clearable="column.clearable"
-        :editable="column.editable"
-        :format="column.format"
-        :value-format="column.valueFormat"
-        size="mini"
-        :disabled="column.disabled"></el-date-picker>
-      <!--数字输入框-->
-      <xt-input-number
-        v-else-if="column.propType==='number'"
-        v-model.number="row[prop]"
-        @input="handleChange"
-        :maxlength="column.maxlength"
-        :minlength="column.minlength"
-        :max="column.max"
-        :min="column.min"
-        size="mini"
-        :class="[{
-                    'is-error': validateState === 'error',
-                },
-                validateState==='error'?'error':'success',
-                ]"
-        :placeholder="column.placeholder"
-        :disabled="column.disabled"/>
-      <!--下拉框-->
-      <el-select
-        v-else-if="column.propType==='select'"
-        v-model.lazy="row[prop]"
-        size="mini"
-        @change="handleChange"
-        :filterable="column.filterable"
-        :class="[{
-                    'is-error': validateState === 'error',
-                },
-                validateState==='error'?'error':'success',
-                ]" :clearable="column.clearable"
-        :placeholder="column.placeholder"
-        :remote="column.remote"
-        :remoteMethod="column.remoteMethod"
-        @input.native="e => handleQueryChange(e.target.value)"
-        @focus="e => handleQueryChange('')"
-        style="width:100%"
-        :disabled="column.disabled">
-        <el-option
-          v-for="item in column.options"
-          :key="item.value"
-          :label="item[column.props.label]"
-          :value="item[column.props.value]"
-          :disabled="optionDisabled(item)">
-        </el-option>
-      </el-select>
-      <!--单个checkbox-->
-      <el-checkbox v-else-if="column.propType==='checkbox'" v-model="row[prop]" @change="handleChange"></el-checkbox>
-      <label style="color:red;font-size:smaller">{{validateMessage}}</label>
-    </div>
-  </section>
+    <tr @click="$emit('rowClick', row)">
+      <td v-for="column in visibleColumns" :key="column.id">
+        <table-cell
+          :row="row"
+          :rowIndex="rowIndex"
+          :column="column"
+          :rule="rules[column.prop]"
+          :edit="rowEditFlag"
+          :value="row[column.prop]">
+        </table-cell>
+      </td>
+      <td v-if="operator">
+        <table-cell-slot
+          :column="operateColumn"
+          :row="row"
+          :edit="rowEditFlag"
+        ></table-cell-slot>
+        <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
+        <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>
+        <el-button icon="fa fa-check" size="mini" title="完成" type="success" v-if="rowEditFlag&&successFlag" @click="handleSubmit"></el-button>
+        <el-button icon="fa fa-close" size="mini" title="取消" type="danger" v-if="rowEditFlag&&cancelFlag" @click="handleCancel"></el-button>
+      </td>
+    </tr>
 </template>
 
 <script>
-  import AsyncValidator from "async-validator";
-  import XtInputNumber from "../xt-input-number";
-
-  /*判断是否是布尔值*/
-  const isBoolean = (propType) => {
-    const booleanLabels = ["boolean", "checkbox"];
-    let booleanFlag = false;
-    booleanLabels.map((item) => {
-      if (propType === item) {
-        booleanFlag = true;
-        return false;
-      }
-    });
-    return booleanFlag;
-  };
+  import TableCell from "./table-cell.vue";
+  import TableCellSlot from "./table-cell-slot";
 
   export default {
-    name: "XtTableRow",
-    components: {
-      XtInputNumber
-    },
-    props: {
-      data: [Array],
-      value: [String, Number, Date, Boolean],
-      row: [Object],
-      prop: [String],
-      isEdit: {
-        type: Boolean,
-        default: () => false
-      },
-      column: {
-        type: Object,
-        default: () => ({})
-      },
-      rowIndex: [Number],
-      rules: {
-        type: Object,
-        default: () => ({})
-      }, //所有的验证规则
-      rule: [Array, Object]//当前值得验证规则
-    },
-    data() {
-      return {
-        validateMessage: "",
-        validateState: ""
-      };
-    },
-    watch: {
-      value: {
-        handler: function (val, oldVal) {
-          this.validator();
-        },
-        deep: true
-      }
-    },
-    computed: {
-      width: {
-        get: function () {
-          return this.column.width || 170;
-        },
-        set: function (v) {
-        //  留空
-        }
-      }
-    },
     methods: {
-
-      /*验证*/
-      validator() {
-        return new Promise((resolve, reject) => {
-          const validate = new AsyncValidator({[this.prop]: this.rule || {required: false}});
-          validate.validate({[this.prop]: this.row[this.prop]}, { firstFields: true }, (errors, fields) => {
-            this.validateState = !errors ? "success" : "error";
-            this.validateMessage = errors ? errors[0].message : "";
-            this.$emit("message", this.validateMessage);
-            this.$set(this.column, "message", this.validateMessage);
-            resolve(errors);
+      // 点击编辑事件
+      handleEdit() {
+        this.$emit("edit");
+      },
+      // 取消编辑
+      handleCancel() {
+        this.$emit("resetFields");
+        this.$emit("cancel");
+      },
+      // 提交事件
+      handleSubmit() {
+        const itemStates = [];
+        this.$emit("validator", (validateState) => {
+          // 验证
+          itemStates.push(validateState);
+        });
+        const validateState = itemStates.find((item) => !item);
+        if (validateState === false) {
+          //  验证未通过
+          console.error("验证未通过");
+        } else {
+          this.$emit("submit", this.row, this.rowIndex, (status) => {
+            //  提交成功或者提交失败
+            if (status) {
+            //  提交成功
+            }
           });
+        }
+      },
+      //删除事件
+      handleDelete() {
+        this.$emit("delete", this.row, this.rowIndex, (status) => {
+          //  删除成功或者删除失败
+          console.log(status);
         });
       },
-
-      /*失去焦点事件*/
-      onFieldBlur() {
-        this.validator();
+      validator(callback) {
+        this.$emit("validator", (validateState) => {
+          callback(validateState);
+          console.log(validateState, "行验证");
+        });
       },
-      onFieldChange() {
-        this.validator();
-      },
-
-      /*change事件*/
-      handleChange(value) {
-        const item = this.column.options.find((op) => op[this.column.props.value] === value);
-        this.$root.Bus.$emit(this.column.prop + "table-cell-change", {value: value, row: this.row, item});
-      },
-
-      /*远程搜索事件*/
-      handleQueryChange(value) {
-        if (this.column.remote && typeof this.column.remoteMethod === "function") {
-          this.column.remoteMethod(value, this.row);
-        }
-      },
-
-      /*选择框下拉框禁用事件*/
-      optionDisabled(item) {
-        let disabled = false;
-        if (this.column.props.disabled) {
-          const disabledItem = this.data.find((dataItem) => dataItem[this.prop] === item[this.column.props.value] && (this.row[this.prop] !== item[this.column.props.value]));
-          if (disabledItem) {
-            disabled = true;
-          }
-        }
-        return disabled;
-      },
-
-      /*获取是boolean类型的显示值*/
-      getBooleanLabel() {
-        if (!isBoolean(this.column.propType)) {return "";}
-        const booleanLength = this.column.options.length;
-        if (booleanLength > 0) {
-
-          /*key:显示的label名称，value：boolean的值*/
-          const booleanItem = this.column.options.find((bo) => bo[this.column.props.value] === this.row[this.prop]);
-          return booleanItem[[this.column.props.label]] || "";
-        } else {
-          return "";
-        }
+      resetFields() {
+        this.$emit("resetFields");
       }
     },
     mounted() {
-      this.$parent.$on("validator-" + this.rowIndex, (callback) => {
-        this.validator();
-        if (this.validateState === "success") {
-          callback(true);
+    //  mounted
+    },
+    components: {
+        TableCell,
+      TableCellSlot
+    },
+    computed: {
+      visibleColumns() {
+        return this.columns.filter((column) => !column.hidden && column.type !== "operate");
+      },
+      operateColumn() {
+        const operateColumn = this.columns.find((column) => !column.hidden && column.type === "operate");
+        if (operateColumn) {
+          return operateColumn;
         } else {
-          callback(false);
+          return {};
         }
-      });
-      this.$parent.$on("resetValidate-" + this.rowIndex, (arr) => {
-        this.validateState = "";
-        this.validateMessage = "";
-      });
-      if (this.rule) {
-        this.$on("el.form.blur", this.onFieldBlur);
-        this.$on("el.form.change", this.onFieldChange);
+      },
+      rowEditFlag: {
+        get() {
+          return this.tableRowEdit;
+        },
+        set() {
+        //  edit状态修改
+        }
       }
+    },
+    data() {
+      return {
+        edit: false
+      };
+    },
+    watch: {
+    // 检测
+    },
+    props: {
+      columns: {
+        type: Array,
+        default() {
+          return [];
+        }
+      },
+      row: {
+        type: Object
+      },
+      rules: {
+        type: Object,
+        default() {
+          return {};
+        }
+      },
+      tableRowEdit: {
+        type: Boolean,
+        default() {
+          return false;
+        }
+      },
+      rowIndex: Number,
+      //操作列显示与否
+      operator: Boolean,
+      // 删除按钮显示设置：默认显示
+      deleteFlag: Boolean,
+      // 完成按钮显示设置：默认显示
+      successFlag: Boolean,
+      // 取消按钮显示设置：默认显示
+      cancelFlag: Boolean,
+      // 编辑按钮显示设置：默认显示
+      editFlag: Boolean
     }
   };
 </script>
-
-<style scoped>
-  .error{
-    border-radius: 4px;
-    border: 1px solid red;
-  }
-  .success{
-    border-radius: 4px;
-    /* border: 1px solid #adb0b5; */
-  }
-  .input_inline{
-    padding: 3px 10px;
-    display: inline-block;
-  }
-  .xt-text-hidden{
-    /*max-width:170px;*/
-    display:block;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-</style>
-

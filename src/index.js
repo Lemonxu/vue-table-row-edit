@@ -1,6 +1,5 @@
 import XtInputNumber from "./components/xt-input-number/index.js";
-import XtTable from "./components/xt-table/index.js";
-import XtTableColumn from "./components/xt-table-column/index.js";
+import {XtTable, XtTableColumn} from "./components/xt-table/index.js";
 
 const components = [
   XtInputNumber,
@@ -8,7 +7,7 @@ const components = [
   XtTableColumn
 ];
 
-const install = function (Vue) {
+const install = function (Vue, options = {}) {
 	/* istanbul ignore if */
   if (install.installed) {return;}
 	components.map((component) => {
