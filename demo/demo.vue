@@ -31,7 +31,7 @@
       </xt-table-column>
       <xt-table-column label="操作" type="operate">
         <template slot-scope="scope">
-          <!--<el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>-->
+          <el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>
         </template>
       </xt-table-column>
     </xt-table>
@@ -144,6 +144,14 @@
     },
     created() {
       console.log(this.$refs.elTable);
+      this.data.map((item, index) => {
+        console.log(item, index);
+        if (index === 1) {
+          // return false;
+          console.log(index);
+          stop();
+        }
+      });
     },
     mounted() {
       console.log(this.$refs.elTable);

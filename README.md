@@ -37,11 +37,11 @@ new Vue({
 <tr><td>type</td><td>表格类型，add为仅有添加功能，edit为仅有修改功能</td><td>String</td><td>default/add</td><td>default</td></tr>
 <tr><td>rules</td><td>表单验证规则</td><td>Object</td><td>---</td><td>---</td></tr>
 <tr><td>add</td><td>是否显示新增按钮</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
-<tr><td>operator</td><td>是否有修改功能</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
-<tr><td>deleteFlag</td><td>是否有删除功能</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
-<tr><td>successFlag</td><td>是否有提交功能</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
-<tr><td>cancelFlag</td><td>是否有取消功能</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
-<tr><td>cancelFlag</td><td>是否有editFlag功能</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>operator</td><td>是否有操作列</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>deleteFlag</td><td>是否有删除按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>successFlag</td><td>是否有提交按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>cancelFlag</td><td>是否有取消按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>editFlag</td><td>是否有编辑按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
 
 </tbody></table>
 
@@ -66,6 +66,7 @@ new Vue({
 <table><thead><tr>
 <th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr></thead>
 <tbody>
+<tr><td>type</td><td>当type="operate"则写入到操作列中</td><td>String</td><td>default/operate</td><td>default</td></tr>
 <tr><td>prop</td><td>对应列内容的字段名</td><td>String</td><td>---</td><td>---</td></tr>
 <tr><td>propType</td><td>对应列内容的字段类型,即行内编辑框的类型</td><td>String</td><td>input/date/number/select</td><td>input</td></tr>
 <tr><td>label</td><td>显示的标题</td><td>String</td><td>---</td><td>---</td></tr>
@@ -126,6 +127,11 @@ new Vue({
               <!--<el-input ></el-input>-->
             </template>
           </xt-table-column>
+          <xt-table-column label="操作" type="operate">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>
+              </template>
+            </xt-table-column>
       </xt-table>
 </template>
 
@@ -154,7 +160,10 @@ export default {
     },
     handleDelete(row,callback){
       callback(true)
-    }
+    },
+    handlePrint(row) {
+      console.log(row, "打印");
+    },
   }
 </script>
 ```

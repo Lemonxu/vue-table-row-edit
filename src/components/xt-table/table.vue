@@ -4,11 +4,11 @@
     <table class="table-border table__header">
       <thead>
       <tr>
-        <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell">
+        <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :width="head.width||180" :style="columnStyle(head)">
           <label style="color:red" v-if="isRequired(head)">*</label>
           {{head.label}}
         </th>
-        <th class="lemon-cell" v-if="operator">操作</th>
+        <th class="lemon-cell" v-if="operator" :style="`width:${operator?80:auto}px;min-width:${operator?80:auto}px`">操作</th>
       </tr>
       </thead>
       <tbody>
@@ -31,6 +31,11 @@
         @cancel="handleCancel(tableRow.row,index)"
         @edit="handleEdit(tableRow.row,index)"
       ></table-row>
+      <tr v-if="tableData.length===0">
+        <td :colspan="headColumns.length+1">
+          暂无数据
+        </td>
+      </tr>
       </tbody>
     </table>
 
@@ -40,9 +45,7 @@
   </div>
 </template>
 <script>
-  import "element-ui/lib/theme-chalk/index.css";
   import Column from "./utils/column";
-  import TableColumnHeader from "./table-column-header";
   import TableRow from "./table-row";
   import ElementUI from "element-ui";
   import Vue from "vue";
@@ -56,6 +59,9 @@
       XtTable: columnStore
     },
     methods: {
+      columnStyle(column) {
+        return `width:${column.width || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
+      },
       //整个table验证重置
       resetFields() {
         this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
@@ -298,7 +304,6 @@
       };
     },
     components: {
-      TableColumnHeader,
       TableRow
     }
   };

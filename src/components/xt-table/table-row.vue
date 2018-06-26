@@ -10,7 +10,7 @@
           :value="row[column.prop]">
         </table-cell>
       </td>
-      <td v-if="operator">
+      <td v-if="operator" class="operate-td">
         <table-cell-slot
           :column="operateColumn"
           :row="row"
@@ -148,3 +148,10 @@
     }
   };
 </script>
+
+<style scoped>
+  @import "css/xt-table.css";
+  .operate-td{
+    padding: 8px;
+  }
+</style>

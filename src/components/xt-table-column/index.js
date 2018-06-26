@@ -12,7 +12,4 @@ const settings = function(settings) {
   mergeSettings(settings);
 };
 
-export default {
-  XtTableColumn,
-  settings
-};
+export default XtTableColumn;

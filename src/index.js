@@ -1,5 +1,6 @@
 import XtInputNumber from "./components/xt-input-number/index.js";
-import {XtTable, XtTableColumn} from "./components/xt-table/index.js";
+import XtTable from "./components/xt-table";
+import XtTableColumn from "./components/xt-table-column";
 
 const components = [
   XtInputNumber,
