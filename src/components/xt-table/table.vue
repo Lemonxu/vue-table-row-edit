@@ -63,10 +63,10 @@
         });
       },
       //整个table验证
-      validator(callback) {
+      validate(callback) {
         const validatorStates = [];
         this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
-          tableRowItem.validator && tableRowItem.validator((validatorState) => {
+          tableRowItem.validate && tableRowItem.validate((validatorState) => {
             validatorStates.push(validatorState);
           });
         });

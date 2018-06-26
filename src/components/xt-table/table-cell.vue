@@ -26,7 +26,7 @@
 		name: "XtTableCell",
     methods: {
       // 验证
-      validator() {
+      validate() {
         return new Promise((resolve) => {
           const validate = new AsyncValidator({[this.column.prop]: this.rule || {required: false}});
           validate.validate({[this.column.prop]: this.row[this.column.prop]}, { firstFields: true }, (errors, fields) => {
@@ -46,8 +46,8 @@
       this.$parent.$on("resetFields", () => {
         this.resetFields();
       });
-      this.$parent.$on("validator", (callback) => {
-        this.validator();
+      this.$parent.$on("validate", (callback) => {
+        this.validate();
         if (this.validateState === "success") {
           callback(true);
         } else {
@@ -69,7 +69,7 @@
       value: {
         handler: function (val, oldVal) {
           if (this.edit) {
-            this.validator();
+            this.validate();
           }
         },
         deep: true

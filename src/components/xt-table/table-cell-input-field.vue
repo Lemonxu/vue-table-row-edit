@@ -131,10 +131,10 @@
     methods: {
       // 失去焦点事件
       onFieldBlur() {
-        this.validator();
+        this.validate();
       },
       onFieldChange() {
-        this.validator();
+        this.validate();
       },
       // change事件
       handleChange(value) {
@@ -192,7 +192,7 @@
     watch: {
       value: {
         handler: function (val, oldVal) {
-          this.validator();
+          this.validate();
         },
         deep: true
       }

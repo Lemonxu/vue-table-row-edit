@@ -131,7 +131,7 @@
         console.log(row);
       },
       handleSuccess () {
-        this.$refs.xtTable && this.$refs.xtTable.validator((validate) => {
+        this.$refs.xtTable && this.$refs.xtTable.validate((validate) => {
           console.log(validate, "总验证");
         });
       },

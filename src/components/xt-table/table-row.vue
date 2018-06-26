@@ -42,7 +42,7 @@
       // 提交事件
       handleSubmit() {
         const itemStates = [];
-        this.$emit("validator", (validateState) => {
+        this.$emit("validate", (validateState) => {
           // 验证
           itemStates.push(validateState);
         });
@@ -66,8 +66,8 @@
           console.log(status);
         });
       },
-      validator(callback) {
-        this.$emit("validator", (validateState) => {
+      validate(callback) {
+        this.$emit("validate", (validateState) => {
           callback(validateState);
           console.log(validateState, "行验证");
         });
