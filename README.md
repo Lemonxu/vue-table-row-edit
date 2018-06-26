@@ -34,7 +34,7 @@ new Vue({
 <th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr></thead>
 <tbody>
 <tr><td>data</td><td>显示的数据</td><td>Array</td><td>---</td><td>---</td></tr>
-<tr><td>type</td><td>表格类型，add为仅有添加功能，edit为仅有修改功能</td><td>String</td><td>default/add</td><td>default</td></tr>
+<tr><td>type</td><td>表格类型，add为仅有添加功能</td><td>String</td><td>default/add</td><td>default</td></tr>
 <tr><td>rules</td><td>表单验证规则</td><td>Object</td><td>---</td><td>---</td></tr>
 <tr><td>add</td><td>是否显示新增按钮</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
 <tr><td>operator</td><td>是否有操作列</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
