@@ -1,7 +1,7 @@
 <template>
    <div>
      <div v-if="!column.template" :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
-       <table-cell-input-field :row="row" :column="column" :isEdit="edit" :rowIndex="rowIndex"></table-cell-input-field>
+       <table-cell-input-field :row="row" :column="column" :isEdit="edit" :rowIndex="rowIndex" :data="data"></table-cell-input-field>
      </div>
      <div v-else :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
        <table-cell-slot :row="row" :column="column"  :class="[{
@@ -9,6 +9,7 @@
                 },
                   validateState==='error'?'error':'success',
                 ]"
+                :data="data"
                 :edit="edit"
                 :rowIndex="rowIndex"></table-cell-slot>
      </div>
@@ -77,6 +78,7 @@
     },
     props: {
       column: Object,
+      data: Array,
       row: Object,
       rule: [Object, Array],
       edit: Boolean,

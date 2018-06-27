@@ -5,6 +5,7 @@
           :row="row"
           :rowIndex="rowIndex"
           :column="column"
+          :data="data"
           :rule="rules[column.prop]"
           :edit="rowEditFlag"
           :value="row[column.prop]">
@@ -14,6 +15,7 @@
         <table-cell-slot
           :column="operateColumn"
           :row="row"
+          :data="data"
           :edit="rowEditFlag"
         ></table-cell-slot>
         <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
@@ -119,6 +121,7 @@
           return [];
         }
       },
+      data: Array,
       row: {
         type: Object
       },

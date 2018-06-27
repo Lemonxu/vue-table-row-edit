@@ -19,6 +19,7 @@
         :row="tableRow.row"
         :rowIndex="index"
         :columns="columns"
+        :data="data"
         :rules="rules"
         :operator="operator"
         :deleteFlag="deleteFlag"

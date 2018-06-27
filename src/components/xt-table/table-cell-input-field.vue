@@ -29,7 +29,7 @@
                    ]"
         :title="row[column.props.labelProp]"
         v-else-if="column.propType==='checkbox'">
-        <el-checkbox v-model="row[prop]" :disabled="true"></el-checkbox>
+        <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
       </label>
       <!--默认显示值-->
       <label v-else
@@ -38,7 +38,7 @@
                    { 'xt-text-hidden': column.showOverflowTooltip }
                    ]"
              :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-             :title="row[prop]">
+             :title="row[column.prop]">
         {{row[column.prop]}}
       </label>
     </div>
@@ -151,7 +151,7 @@
       optionDisabled(item) {
         let disabled = false;
         if (this.column.props.disabled) {
-          const disabledItem = this.data.find((dataItem) => dataItem[this.prop] === item[this.column.props.value] && (this.row[this.prop] !== item[this.column.props.value]));
+          const disabledItem = this.data.find((dataItem) => dataItem[this.column.prop] === item[this.column.props.value] && (this.row[this.column.prop] !== item[this.column.props.value]));
           if (disabledItem) {
             disabled = true;
           }
@@ -164,7 +164,7 @@
         const booleanLength = this.column.options.length;
         if (booleanLength > 0) {
           // key:显示的label名称，value：boolean的值
-          const booleanItem = this.column.options.find((bo) => bo[this.column.props.value] === this.row[this.prop]);
+          const booleanItem = this.column.options.find((bo) => bo[this.column.props.value] === this.row[this.column.prop]);
           return booleanItem[[this.column.props.label]] || "";
         } else {
           return "";
@@ -176,6 +176,7 @@
     },
     props: {
       column: Object,
+      data: Array,
       row: Object,
       rule: [Object, Array],
       edit: Boolean,

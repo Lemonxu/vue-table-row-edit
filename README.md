@@ -52,7 +52,7 @@ new Vue({
 <tr><td>success</td><td>行内验证提交事件 ,回调(callback(true/false)) (成功)/(失败)</td><td>row,callback</td></tr>
 <tr><td>edit</td><td>行内编辑点击事件 ,回调(callback(true/false)) (成功)/(失败)</td><td>row,callback</td></tr>
 <tr><td>delete</td><td>行内删除事件 ,回调callback(true/false)(成功)/(失败)</td><td>row,callback</td></tr>
-<tr><td>add</td><td>新增事件,回调callback(item),item为新增的行内对象</td><td>row,callback</td></tr>
+<tr><td>add</td><td>新增事件,回调callback(item),item为新增的行内对象</td><td>callback</td></tr>
 <tr><td>validate</td><td>对整个表格的数据进行校验的方法</td><td>this.$refs[data].validate((validateState) => {
                 if(validateState){
                   //验证通过
