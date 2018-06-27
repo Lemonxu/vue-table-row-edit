@@ -4,8 +4,6 @@
 ## 当前版本：v2.0.1
 [更新日志](https://github.com/Lemonxu/vue-table-row-edit/releases)
 
-依赖版本号：&nbsp;&nbsp; vue:^2.5.13 &nbsp;&nbsp; element-ui:^2.0.11
-
 ------------------------------------------------------------------------------
 ### Install
 ```$xslt
@@ -92,6 +90,13 @@ new Vue({
 <tr><td>change</td><td>值改变时触发</td><td>(value,row,item) <br/>value:选中的值，row:该行的数据，item:选择框选中的对象，仅在propType='select'时有值</td></tr>
 </tbody></table>
 
+#### Table-column Scoped Slot
+<table><thead><tr>
+<th>名称</th><th>说明</th></tr>
+</thead><tbody>
+<tr><td>---</td><td>自定义列的内容，参数为 {row, edit, $index, data}，edit为是否正在编辑中的状态Boolean类型</td></tr>
+</tbody></table>
+
 
 -----------------------------------------------------------------
 #### Example
@@ -167,3 +172,5 @@ export default {
   }
 </script>
 ```
+
+<img src="./table.gif"/>

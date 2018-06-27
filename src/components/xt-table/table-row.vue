@@ -51,7 +51,7 @@
         const validateState = itemStates.find((item) => !item);
         if (validateState === false) {
           //  验证未通过
-          console.error("验证未通过");
+          // console.error("验证未通过");
         } else {
           this.$emit("submit", this.row, this.rowIndex, (status) => {
             //  提交成功或者提交失败

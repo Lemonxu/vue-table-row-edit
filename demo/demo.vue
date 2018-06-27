@@ -4,7 +4,7 @@
     <!--<el-button size="mini" type="primary" @click="handleAdd" style="float: left">新增</el-button>-->
     <xt-table ref="xtTable" :data="data" border :rules="rules" @success="submitData" @delete="deleteData" @add="handleAdd" @edit="handleEdit">
       <xt-table-column prop="index" label="序号">
-        <template slot-scope="scope" type="expand">
+        <template slot-scope="scope">
           {{scope.$index}}
         </template>
       </xt-table-column>
@@ -104,7 +104,7 @@
       handleEdit(row, callback) {
         console.log(111);
         setTimeout(() => {
-          row.name = "测试员";
+          // row.name = "测试员";
           // callback();
         }, 300);
       },
