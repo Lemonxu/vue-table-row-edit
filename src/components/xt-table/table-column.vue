@@ -74,7 +74,11 @@
       formatter: { default: (v) => v, type: Function },
       hidden: { default: false, type: Boolean },
       cellClass: { default: settings.cellClass },
-      headerClass: { default: settings.headerClass }
+      headerClass: { default: settings.headerClass },
+      align: {
+        type: String,
+        default: () => "left"
+      }
     },
     created() {
       Bus.$on(this.prop + "table-cell-change", ({value, row, item}) => {

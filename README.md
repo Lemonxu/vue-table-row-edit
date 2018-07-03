@@ -35,6 +35,7 @@ new Vue({
 <tr><td>type</td><td>表格类型，add为仅有添加功能</td><td>String</td><td>default/add</td><td>default</td></tr>
 <tr><td>rules</td><td>表单验证规则</td><td>Object</td><td>---</td><td>---</td></tr>
 <tr><td>add</td><td>是否显示新增按钮</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
+<tr><td>addLabel</td><td>新增字样</td><td>String</td><td>---</td><td>新增</td></tr>
 <tr><td>operator</td><td>是否有操作列</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
 <tr><td>deleteFlag</td><td>是否有删除按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>
 <tr><td>successFlag</td><td>是否有提交按钮、事件</td><td>Boolean</td><td>true/false</td><td>true</td></tr>

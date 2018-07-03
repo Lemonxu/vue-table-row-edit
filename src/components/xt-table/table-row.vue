@@ -5,6 +5,7 @@
           :row="row"
           :rowIndex="rowIndex"
           :column="column"
+          :tableStore="tableStore"
           :data="data"
           :rule="rules[column.prop]"
           :edit="rowEditFlag"
@@ -17,6 +18,7 @@
           :row="row"
           :data="data"
           :edit="rowEditFlag"
+          :tableStore="tableStore"
         ></table-cell-slot>
         <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
         <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>
@@ -65,13 +67,13 @@
       handleDelete() {
         this.$emit("delete", this.row, this.rowIndex, (status) => {
           //  删除成功或者删除失败
-          console.log(status);
+          // console.log(status);
         });
       },
       validate(callback) {
         this.$emit("validate", (validateState) => {
           callback(validateState);
-          console.log(validateState, "行验证");
+          // console.log(validateState, "行验证");
         });
       },
       resetFields() {
@@ -147,7 +149,8 @@
       // 取消按钮显示设置：默认显示
       cancelFlag: Boolean,
       // 编辑按钮显示设置：默认显示
-      editFlag: Boolean
+      editFlag: Boolean,
+      tableStore: Object
     }
   };
 </script>

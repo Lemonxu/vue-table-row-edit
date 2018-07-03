@@ -3,23 +3,23 @@
     <h1>{{ msg }}</h1>
     <!--<el-button size="mini" type="primary" @click="handleAdd" style="float: left">新增</el-button>-->
     <xt-table ref="xtTable" :data="data" border :rules="rules" @success="submitData" @delete="deleteData" @add="handleAdd" @edit="handleEdit">
-      <xt-table-column prop="index" label="序号">
+      <!--<xt-table-column prop="index" label="序号">
         <template slot-scope="scope">
           {{scope.$index}}
         </template>
       </xt-table-column>
       <xt-table-column prop="name" label="姓名" :edit="true">
-      </xt-table-column>
+      </xt-table-column>-->
       <xt-table-column prop="sex" label="性别"
-                            :edit="true"
-                            propType="input"
-                            :options="selectOptions">
+                        :edit="true"
+                        propType="input"
+                        :options="selectOptions">
         <template slot-scope="scope" type="expand">
-          <el-input v-model="scope.row.sex" size="mini"></el-input>
+          <el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>
           <!--<el-input ></el-input>-->
         </template>
       </xt-table-column>
-      <xt-table-column
+   <!--   <xt-table-column
         prop="birth"
         label="出生年月"
         :edit="true"
@@ -28,22 +28,24 @@
       <xt-table-column prop="age" label="年龄" propType="inputNumber">
       </xt-table-column>
       <xt-table-column prop="hobby" label="爱好" @change="hobbyChange">
+      </xt-table-column>-->
+      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip >
       </xt-table-column>
-      <xt-table-column label="操作" type="operate">
-        <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>
-        </template>
-      </xt-table-column>
+      <!--<xt-table-column label="操作" type="operate">-->
+        <!--<template slot-scope="scope">-->
+          <!--<el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>-->
+        <!--</template>-->
+      <!--</xt-table-column>-->
     </xt-table>
 
     <el-button size="mini" type="primary" @click="handleSuccess">总提交</el-button>
     <el-button size="mini" type="danger" @click="handleCancel">总取消</el-button>
 
 
-    <!--<el-table-->
-      <!--:data="tableData"-->
-      <!--ref="elTable"-->
-      <!--style="width: 100%">-->
+    <el-table
+      :data="tableData"
+      ref="elTable"
+      style="width: 100%">
       <!--<el-table-column-->
         <!--prop="date"-->
         <!--label="日期"-->
@@ -58,12 +60,21 @@
         <!--prop="address"-->
         <!--label="地址">-->
       <!--</el-table-column>-->
-      <!--<el-table-column prop="index" label="序号">-->
-        <!--<template slot-scope="scope" type="expand">-->
-          <!--{{scope.$index}}-->
+      <el-table-column
+        prop="address"
+        label="地址" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{scope.row.address}}
+        </template>
+      </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="address"-->
+        <!--label="地址" show-overflow-tooltip>-->
+        <!--<template slot-scope="scope">-->
+          <!--<el-input></el-input>-->
         <!--</template>-->
       <!--</el-table-column>-->
-    <!--</el-table>-->
+    </el-table>
     <!--<table-component-->
       <!--:data="[-->
           <!--{ firstName: 'John', lastName: 'Lennon', instrument: 'Guitar', birthday: '04/10/1940', songs: 72 },-->
@@ -145,16 +156,16 @@
     created() {
       console.log(this.$refs.elTable);
       this.data.map((item, index) => {
-        console.log(item, index);
+        // console.log(item, index);
         if (index === 1) {
           // return false;
-          console.log(index);
+          // console.log(index);
           stop();
         }
       });
     },
     mounted() {
-      console.log(this.$refs.elTable);
+      // console.log(this.$refs.elTable);
     },
     data () {
       return {
@@ -164,7 +175,7 @@
           {id: 2, name: "李四1", sex: "男1", birth: "2010-06-05", hobby: "唱歌", age: 11},
           {id: 2, name: "", sex: "", birth: "2010-06-05", hobby: "唱歌", age: 11},
           {id: 2, name: "李四2", sex: "男2", birth: "2010-06-05", hobby: "唱歌", age: 11},
-          {id: 2, name: "李四3", sex: "男3", birth: "2010-06-05", hobby: "唱歌", age: 11}],
+          {id: 2, name: "李四3", sex: "男3", birth: "2010-06-05", hobby: "唱歌上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄", age: 11}],
         selectOptions: [{name: "男", value: "男"}, {name: "女", value: "女"}],
         rules: {
           name: [{required: true, message: "请输入姓名", trigger: "change"}],
@@ -173,7 +184,7 @@
         tableData: [{
           date: "2016-05-02",
           name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
+          address: "上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄"
         }, {
           date: "2016-05-04",
           name: "王小虎",

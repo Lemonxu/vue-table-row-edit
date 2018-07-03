@@ -29,9 +29,31 @@ function range(from, to) {
     return [...Array(to - from)].map((_, i) => i + from);
 }
 
+const parseWidth = (width) => {
+  if (width !== undefined) {
+    width = parseInt(width, 10);
+    if (isNaN(width)) {
+      width = null;
+    }
+  }
+  return width;
+};
+
+const parseMinWidth = (minWidth) => {
+  if (minWidth !== undefined) {
+    minWidth = parseInt(minWidth, 10);
+    if (isNaN(minWidth)) {
+      minWidth = null;
+    }
+  }
+  return minWidth;
+};
+
 export {
   classList,
   get,
   pick,
-  range
+  range,
+  parseWidth,
+  parseMinWidth
 };

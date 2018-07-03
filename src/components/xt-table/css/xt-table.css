@@ -1,3 +1,6 @@
+.xt-table{
+  overflow: auto;
+}
 .lemon-cell{
   height: 1rem;
 }
@@ -21,7 +24,7 @@ table th, table td {
 }
 
 table th {
-  text-transform: uppercase;
+  text-transform: none;
   font-size: 14px;
   letter-spacing: 1px;
   background-color: #eef1f6;

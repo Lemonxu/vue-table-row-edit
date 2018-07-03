@@ -1,47 +1,5 @@
 <template>
-  <section>
-    <div  v-if="(!isEdit)||(column.onlyShow)">
-      <!--选择框值显示-->
-      <label
-        :class="['cell','el-tooltip',
-                 {'xt-text-hidden':column.showOverflowTooltip}]"
-        :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-        :title="row[column.props.labelProp]"
-        v-if="column.propType==='select'&&column.props.labelProp">
-        {{row[column.props.labelProp]}}
-      </label>
-      <!--布尔值显示-->
-      <label
-        :class="[
-                    'cell','el-tooltip',
-                   {'xt-text-hidden':column.showOverflowTooltip}
-                   ]"
-        :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-        :title="row[column.props.labelProp]"
-        v-else-if="column.propType==='boolean'">
-        {{getBooleanLabel()}}
-      </label>
-      <!--checkbox选择框显示-->
-      <label
-        :class="[
-                    'cell','el-tooltip',
-                   {'xt-text-hidden':column.showOverflowTooltip}
-                   ]"
-        :title="row[column.props.labelProp]"
-        v-else-if="column.propType==='checkbox'">
-        <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
-      </label>
-      <!--默认显示值-->
-      <label v-else
-             :class="[
-                    'cell','el-tooltip',
-                   { 'xt-text-hidden': column.showOverflowTooltip }
-                   ]"
-             :style="`width:${column.width}px;min-width:${column.minWidth}px;max-width:${column.maxWidth}px`"
-             :title="row[column.prop]">
-        {{row[column.prop]}}
-      </label>
-    </div>
+  <section ref="tableCellInputField">
     <div v-if="isEdit&&(!column.onlyShow)" >
       <slot :scope="row"></slot>
       <!--文本输入框-->
@@ -54,7 +12,8 @@
         :minlength="column.minlength"
         :clearable="column.clearable"
         :placeholder="column.placeholder"
-        :disabled="column.disabled"></el-input>
+        :disabled="column.disabled"
+      style="width: 100%"></el-input>
       <!--时间选择框-->
       <el-date-picker
         v-else-if="column.propType==='date'"
@@ -67,7 +26,8 @@
         :format="column.format"
         :value-format="column.valueFormat"
         size="mini"
-        :disabled="column.disabled"></el-date-picker>
+        :disabled="column.disabled"
+        style="width: 100%"></el-date-picker>
       <!--数字输入框-->
       <xt-input-number
         v-else-if="column.propType==='number'"
@@ -79,7 +39,8 @@
         :min="column.min"
         size="mini"
         :placeholder="column.placeholder"
-        :disabled="column.disabled"/>
+        :disabled="column.disabled"
+        style="width: 100%"/>
       <!--下拉框-->
       <el-select
         v-else-if="column.propType==='select'"
@@ -112,6 +73,7 @@
 <script>
   import XtInputNumber from "../xt-input-number";
   import Bus from "./bus";
+  import {parseWidth, parseMinWidth} from "./utils/helpers";
 
   /*判断是否是布尔值*/
   const isBoolean = (propType) => {
@@ -157,32 +119,26 @@
           }
         }
         return disabled;
-      },
-      // 获取是boolean类型的显示值
-      getBooleanLabel() {
-        if (!isBoolean(this.column.propType)) {return "";}
-        const booleanLength = this.column.options.length;
-        if (booleanLength > 0) {
-          // key:显示的label名称，value：boolean的值
-          const booleanItem = this.column.options.find((bo) => bo[this.column.props.value] === this.row[this.column.prop]);
-          return booleanItem[[this.column.props.label]] || "";
-        } else {
-          return "";
-        }
       }
     },
+    mounted() {
+      // console.log(this.$parent.$el.clientWidth, this.$parent.$parent.$el.clientWidth);
+    },
+    computed: {},
     components: {
       XtInputNumber
     },
     props: {
       column: Object,
+      columns: Array,
       data: Array,
       row: Object,
       rule: [Object, Array],
       edit: Boolean,
       value: [String, Number, Date, Boolean],
       prop: [String],
-      isEdit: Boolean
+      isEdit: Boolean,
+      tableStore: Object
     },
     data() {
       return {
@@ -196,16 +152,6 @@
           this.validate();
         },
         deep: true
-      }
-    },
-    computed: {
-      width: {
-        get: function () {
-          return this.column.width || 170;
-        },
-        set: function (v) {
-          //  留空
-        }
       }
     }
   };

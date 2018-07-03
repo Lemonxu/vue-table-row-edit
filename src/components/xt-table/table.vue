@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-button icon="fa fa-plus" size="mini" style="float: left" type="primary" v-if="add" @click="handleAdd">&nbsp;新增</el-button>
+  <div class="xt-table">
+    <el-button icon="fa fa-plus" size="mini" style="float: left" type="primary" v-if="add" @click="handleAdd">&nbsp;{{addLabel}}</el-button>
     <table class="table-border table__header">
       <thead>
       <tr>
@@ -8,7 +8,7 @@
           <label style="color:red" v-if="isRequired(head)">*</label>
           {{head.label}}
         </th>
-        <th class="lemon-cell" v-if="operator" :style="`width:${operator?80:auto}px;min-width:${operator?80:auto}px`">操作</th>
+        <th class="lemon-cell" v-if="operator" :style="getOperateStyle()">操作</th>
       </tr>
       </thead>
       <tbody>
@@ -19,6 +19,7 @@
         :row="tableRow.row"
         :rowIndex="index"
         :columns="columns"
+        :tableStore="tableStore"
         :data="data"
         :rules="rules"
         :operator="operator"
@@ -50,15 +51,12 @@
   import TableRow from "./table-row";
   import ElementUI from "element-ui";
   import Vue from "vue";
+  import {parseWidth, parseMinWidth} from "./utils/helpers";
 
   Vue.use(ElementUI);
 
-  const columnStore = {}; // 在table和table-column进行交互传递
   export default {
     name: "XtTable",
-    provide: {
-      XtTable: columnStore
-    },
     methods: {
       columnStyle(column) {
         return `width:${column.width || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
@@ -198,6 +196,20 @@
           }
           callback(status);
         });
+      },
+      getOperateStyle() {
+        const defaultButtons = [];
+        if (this.editFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
+        if (this.successFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
+        if (this.deleteFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
+        if (this.cancelFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
+        const buttonLength = defaultButtons.filter((item) => item).length;
+        let operateStyle = `min-width:${buttonLength * 40}px;width:${buttonLength * 40}px`;
+        const operateItem = this.columns.find((column) => !column.hidden && column.type === "operate");
+        if (operateItem) {
+          operateStyle = `min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 40)}px;width:${parseWidth(operateItem.width || buttonLength * 40)}px;max-width:${operateItem.maxWidth || "auto"}`;
+        }
+        return operateStyle;
       }
     },
     created () {
@@ -262,6 +274,10 @@
         type: Boolean,
         default: () => true
       },
+      addLabel: {
+        type: String,
+        default: () => "新增"
+      },
       //操作列显示与否
       operator: {
         type: Boolean,
@@ -289,7 +305,9 @@
       }
     },
     data() {
+      const tableStore = {table: this, tableCellSlot: {}};
       return {
+        tableStore,
         columns: [],
         rows: [],
         adds: [],
