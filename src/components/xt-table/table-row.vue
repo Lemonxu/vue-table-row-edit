@@ -19,6 +19,7 @@
           :data="data"
           :edit="rowEditFlag"
           :tableStore="tableStore"
+          type="operation"
         ></table-cell-slot>
         <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
         <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>

@@ -108,7 +108,7 @@
       },
       getTableCellFieldStyle(realWidth) {
         const minWidth = parseMinWidth(this.column.minWidth) ? parseMinWidth(this.column.minWidth) + "px" : "auto",
-          width = parseWidth(this.column.width || 80) + "px";
+          width = parseWidth(this.column.width) ? parseWidth(this.column.width) + "px" : realWidth + "px";
         const sumWidth = [realWidth].reduce(function(prev, curr, idx, arr) {return prev + curr;});
         realWidth = (this.column.width || this.column.minWidth || (sumWidth * 0.7).toFixed(0)) + "px";
         let maxWidth = this.column.maxWidth || "auto";
@@ -119,7 +119,7 @@
             maxWidth = this.column.maxWidth + "px";
           }
         }
-        console.log(this.column, `text-align:${this.column.align};min-width:${minWidth};width:${width};max-width:${maxWidth}`);
+        // console.log(this.column, `text-align:${this.column.align};min-width:${minWidth};width:${width};max-width:${maxWidth}`);
         return `text-align:${this.column.align};min-width:${minWidth};width:${width};max-width:${maxWidth}`;
       }
     },
@@ -129,7 +129,7 @@
         if (this.$el.clientWidth < width) {
           width = this.$el.clientWidth + 20;
         }
-        this.styleData = this.getTableCellFieldStyle(width);
+        this.styleData = this.getTableCellFieldStyle(width * (1 / (this.tableStore.table.columns.length)));
         this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
       }
       this.$parent.$on("resetFields", () => {
@@ -143,9 +143,6 @@
           callback(false);
         }
       });
-    },
-    activated() {
-      console.log(5656);
     },
     computed: {
       style: {

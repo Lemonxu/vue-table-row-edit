@@ -9,14 +9,17 @@ export default {
     edit: Boolean,
     rowIndex: Number,
     tableStore: Object,
-    tableCellStyle: String
+    tableCellStyle: String,
+    type: String
   },
   render(createElement, { props }) {
     const data = {attrs: {}};
     if (props.tableStore.tableCellSlot) {
-      // console.log(props.tableCellStyle, props.row[props.column.prop]);
+      // console.log(props.type, props.row[props.column.prop]);
       data.class = props.edit ? "" : props.tableStore.tableCellSlot.class || "";
-      data.style = props.tableCellStyle || props.tableStore.tableCellSlot.style || "";
+      if (props.type !== "operation") {
+        data.style = props.tableCellStyle || props.tableStore.tableCellSlot.style || "";
+      }
       data.attrs.title = props.row[props.column.prop] || "";
     }
     if (props.column.template) {
