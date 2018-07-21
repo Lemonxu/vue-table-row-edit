@@ -1,27 +1,27 @@
 <template>
    <div>
-     <template  v-if="(!edit)||(column.onlyShow)">
-       <!--checkbox选择框显示-->
-       <label
-         :class="['cell','el-tooltip',
+     <!--<template>-->
+       <div v-if="!column.template" :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
+         <template  v-if="(!edit)||(column.onlyShow)">
+           <!--checkbox选择框显示-->
+           <label
+             :class="['cell','el-tooltip',
                  {'xt-text-hidden':column.showOverflowTooltip}
                  ]"
-         :title="row[column.props.labelProp]"
-         v-if="column.propType==='checkbox'">
-         <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
-       </label>
-       <!--默认显示值-->
-       <label v-else
-              :class="['cell','el-tooltip',
+             :title="row[column.props.labelProp]"
+             v-if="column.propType==='checkbox'">
+             <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
+           </label>
+           <!--默认显示值-->
+           <label v-else
+                  :class="['cell','el-tooltip',
                  { 'xt-text-hidden': column.showOverflowTooltip }
                  ]"
-              :style="style"
-              :title="getLabel()">
-         {{getLabel()}}
-       </label>
-     </template>
-     <template>
-       <div v-if="!column.template" :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
+                  :style="style"
+                  :title="getLabel()">
+             {{getLabel()}}
+           </label>
+         </template>
          <table-cell-input-field :row="row" :column="column" :tableStore="tableStore" :isEdit="edit" :rowIndex="rowIndex" :data="data"></table-cell-input-field>
        </div>
        <div v-else :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
@@ -34,7 +34,7 @@
             :rowIndex="rowIndex"
             :tableCellStyle="style"></table-cell-slot>
        </div>
-     </template>
+     <!--</template>-->
      <label style="color:red;font-size:smaller">{{validateMessage}}</label>
    </div>
 </template>
@@ -107,29 +107,28 @@
         return this.row[this.column.prop];
       },
       getTableCellFieldStyle(realWidth) {
-        const minWidth = parseMinWidth(this.column.minWidth) ? parseMinWidth(this.column.minWidth) + "px" : "auto",
-          width = parseWidth(this.column.width) ? parseWidth(this.column.width) + "px" : realWidth + "px";
-        const sumWidth = [realWidth].reduce(function(prev, curr, idx, arr) {return prev + curr;});
-        realWidth = (this.column.width || this.column.minWidth || (sumWidth * 0.7).toFixed(0)) + "px";
-        let maxWidth = this.column.maxWidth || "auto";
-        if (parseInt(this.column.maxWidth, 10) && parseInt(this.column.maxWidth, 10) > 0) {
-          if (parseInt(this.column.maxWidth, 10) < 100) {
-            maxWidth = this.column.maxWidth + "%";
-          } else {
-            maxWidth = this.column.maxWidth + "px";
-          }
+        let minWidth = parseMinWidth(this.column.minWidth), width = parseWidth(this.column.width), maxWidth = parseWidth(this.column.maxWidth || realWidth);
+        const sumWidth = [minWidth || realWidth, width || realWidth, maxWidth || realWidth].reduce(function(prev, curr, idx, arr) {return parseFloat(prev) + parseFloat(curr);});
+        realWidth = ((sumWidth / 3).toFixed(0));
+        width = realWidth;
+        if (!minWidth) {
+          minWidth = 0;
         }
-        // console.log(this.column, `text-align:${this.column.align};min-width:${minWidth};width:${width};max-width:${maxWidth}`);
-        return `text-align:${this.column.align};min-width:${minWidth};width:${width};max-width:${maxWidth}`;
+        if (minWidth && (minWidth >= width || !width)) {
+          width = minWidth;
+        }
+        if (!maxWidth || maxWidth <= width) {
+          maxWidth = width;
+        }
+        // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
+        return `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`;
       }
     },
     mounted() {
+      console.log(this.tableStore.table.$el.clientWidth, "table-cell", Bus.ponyTable);
       if (this.$el) {
-        let width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10) + 20;
-        if (this.$el.clientWidth < width) {
-          width = this.$el.clientWidth + 20;
-        }
-        this.styleData = this.getTableCellFieldStyle(width * (1 / (this.tableStore.table.columns.length)));
+        const width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10).toFixed(2);
+        this.styleData = this.getTableCellFieldStyle(width);
         this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
       }
       this.$parent.$on("resetFields", () => {

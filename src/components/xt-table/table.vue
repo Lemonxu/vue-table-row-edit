@@ -1,7 +1,7 @@
 <template>
   <div class="xt-table">
     <el-button icon="fa fa-plus" size="mini" style="float: left" type="primary" v-if="add" @click="handleAdd">&nbsp;{{addLabel}}</el-button>
-    <table class="table-border table__header">
+    <table class="table-border table__header" ref="table">
       <thead>
       <tr>
         <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :width="head.width||180" :style="columnStyle(head)">
@@ -52,12 +52,16 @@
   import ElementUI from "element-ui";
   import Vue from "vue";
   import {parseWidth, parseMinWidth} from "./utils/helpers";
+  import {addResizeListener, removeResizeListener} from "./utils/resize-event";
+  import ResizeObserver from "resize-observer-polyfill";
+  import Bus from "./bus";
 
   Vue.use(ElementUI);
 
   export default {
     name: "XtTable",
     methods: {
+      //列基础宽度样式
       columnStyle(column) {
         return `width:${column.width || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
       },
@@ -132,7 +136,6 @@
         });
         this.edits = newEdits;
       },
-
       //新增事件
       handleAdd() {
         this.adds.push(this.data.length);
@@ -140,6 +143,7 @@
         //  新增回调事件
         });
       },
+      //取消事件
       handleCancel(row, rowIndex) {
         const isAddFlag = this.adds.includes(rowIndex);
         if (isAddFlag) {
@@ -166,6 +170,7 @@
           callback(status);
         });
       },
+      //编辑事件
       handleEdit(row, rowIndex) {
         const edit = () => {
           const editFlag = this.edits.includes(rowIndex);
@@ -197,6 +202,7 @@
           callback(status);
         });
       },
+      //获取操作列宽度
       getOperateStyle() {
         const defaultButtons = [];
         if (this.editFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
@@ -210,12 +216,34 @@
           operateStyle = `min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 40)}px;width:${parseWidth(operateItem.width || buttonLength * 40)}px;max-width:${operateItem.maxWidth || "auto"}`;
         }
         return operateStyle;
+      },
+      bindEvents() {
+        addResizeListener(this.$el, this.resizeListener);
+      },
+      resizeListener() {
+        const el = this.$el;
+        console.log(el.offsetWidth, el.offsetHeight);
+        this.tableStore.table = this;
+        Bus.ponyTable = el.offsetWidth;
+        console.log(this.tableStore.table.$el.clientWidth, "table-resize");
+      //   const myObserver = new ResizeObserver((entries) => {
+      //     entries.forEach((entry) => {
+      //       console.log("width", entry.contentRect.width);
+      //       console.log("height", entry.contentRect.height);
+      //     });
+      //   });
+      //   console.log(this.$el);
+      //   myObserver.observe(this.$refs.table);
       }
     },
     created () {
     //  创建完成
     },
     async mounted() {
+      // this.resizeListener();
+      this.bindEvents();
+      console.log(this);
+      console.log("table-mounted");
       //列属性搜集
       const columnComponents = this.$slots.default
         .filter((column) => column.componentInstance)
@@ -230,6 +258,9 @@
           })
         );
       });
+    },
+    destroyed() {
+      if (this.resizeListener) {removeResizeListener(this.$el, this.resizeListener);}
     },
     watch: {
     //  检测事件

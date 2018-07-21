@@ -13,7 +13,7 @@
       <xt-table-column prop="sex" label="性别"
                         :edit="true"
                         propType="input"
-                        :options="selectOptions">
+                        :options="selectOptions" :width="150">
         <template slot-scope="scope" type="expand">
           <el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>
           <!--<el-input ></el-input>-->
@@ -29,7 +29,7 @@
       </xt-table-column>
       <xt-table-column prop="hobby" label="爱好" @change="hobbyChange">
       </xt-table-column>-->
-      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip >
+      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :width="100">
       </xt-table-column>
       <!--<xt-table-column label="操作" type="operate">-->
         <!--<template slot-scope="scope">-->
@@ -42,39 +42,26 @@
     <el-button size="mini" type="danger" @click="handleCancel">总取消</el-button>
 
 
-    <el-table
-      :data="tableData"
-      ref="elTable"
-      style="width: 100%">
+    <!--<el-table-->
+      <!--:data="tableData"-->
+      <!--ref="elTable"-->
+      <!--style="width: 100%">-->
       <!--<el-table-column-->
         <!--prop="date"-->
-        <!--label="日期"-->
-        <!--width="180">-->
+        <!--label="日期">-->
       <!--</el-table-column>-->
       <!--<el-table-column-->
         <!--prop="name"-->
-        <!--label="姓名"-->
-        <!--width="180">-->
+        <!--label="姓名">-->
       <!--</el-table-column>-->
-      <!--<el-table-column-->
-        <!--prop="address"-->
-        <!--label="地址">-->
-      <!--</el-table-column>-->
-      <el-table-column
-        prop="address"
-        label="地址" show-overflow-tooltip>
-        <template slot-scope="scope">
-          {{scope.row.address}}
-        </template>
-      </el-table-column>
       <!--<el-table-column-->
         <!--prop="address"-->
         <!--label="地址" show-overflow-tooltip>-->
         <!--<template slot-scope="scope">-->
-          <!--<el-input></el-input>-->
+          <!--{{scope.row.address}}-->
         <!--</template>-->
       <!--</el-table-column>-->
-    </el-table>
+    <!--</el-table>-->
     <!--<table-component-->
       <!--:data="[-->
           <!--{ firstName: 'John', lastName: 'Lennon', instrument: 'Guitar', birthday: '04/10/1940', songs: 72 },-->
