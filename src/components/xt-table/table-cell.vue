@@ -107,7 +107,7 @@
         return this.row[this.column.prop];
       },
       getTableCellFieldStyle(realWidth) {
-        let minWidth = parseMinWidth(this.column.minWidth), width = parseWidth(this.column.width), maxWidth = parseWidth(this.column.maxWidth || realWidth);
+        let minWidth = parseMinWidth(this.column.minWidth), width = parseWidth(this.column.width || this.column.newWidth), maxWidth = parseWidth(this.column.maxWidth || realWidth);
         const sumWidth = [minWidth || realWidth, width || realWidth, maxWidth || realWidth].reduce(function(prev, curr, idx, arr) {return parseFloat(prev) + parseFloat(curr);});
         realWidth = ((sumWidth / 3).toFixed(0));
         width = realWidth;
@@ -120,17 +120,17 @@
         if (!maxWidth || maxWidth <= width) {
           maxWidth = width;
         }
-        // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
+       // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
         return `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`;
       }
     },
     mounted() {
-      console.log(this.tableStore.table.$el.clientWidth, "table-cell", Bus.ponyTable);
-      if (this.$el) {
+      //console.log(this.tableStore.table.$el.clientWidth, "table-cell", Bus.ponyTable);
+     /* if (this.$el) {
         const width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10).toFixed(2);
         this.styleData = this.getTableCellFieldStyle(width);
         this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
-      }
+      }*/
       this.$parent.$on("resetFields", () => {
         this.resetFields();
       });
@@ -167,6 +167,12 @@
           if (this.edit) {
             this.validate();
           }
+        },
+        deep: true
+      },
+      column: {
+        handler: function (val, oldVal) {
+          this.styleData = this.getTableCellFieldStyle(val.width || val.newWidth);
         },
         deep: true
       }

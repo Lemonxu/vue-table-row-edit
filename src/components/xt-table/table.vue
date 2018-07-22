@@ -4,11 +4,11 @@
     <table class="table-border table__header" ref="table">
       <thead>
       <tr>
-        <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :width="head.width||180" :style="columnStyle(head)">
+        <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :style="columnStyle(head)">
           <label style="color:red" v-if="isRequired(head)">*</label>
           {{head.label}}
         </th>
-        <th class="lemon-cell" v-if="operator" :style="getOperateStyle()">操作</th>
+        <th ref="operator" class="lemon-cell" v-if="operator" :style="getOperateStyle()">操作</th>
       </tr>
       </thead>
       <tbody>
@@ -63,7 +63,7 @@
     methods: {
       //列基础宽度样式
       columnStyle(column) {
-        return `width:${column.width || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
+        return `width:${column.width || column.newWidth || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
       },
       //整个table验证重置
       resetFields() {
@@ -222,18 +222,26 @@
       },
       resizeListener() {
         const el = this.$el;
-        console.log(el.offsetWidth, el.offsetHeight);
         this.tableStore.table = this;
-        Bus.ponyTable = el.offsetWidth;
-        console.log(this.tableStore.table.$el.clientWidth, "table-resize");
-      //   const myObserver = new ResizeObserver((entries) => {
-      //     entries.forEach((entry) => {
-      //       console.log("width", entry.contentRect.width);
-      //       console.log("height", entry.contentRect.height);
-      //     });
-      //   });
-      //   console.log(this.$el);
-      //   myObserver.observe(this.$refs.table);
+       this.calColumns();
+      },
+      calColumns() {
+        // 计算已经用户设置的宽度
+        const el = this.$el, widths = [];
+        this.columns.map((column) => {
+          if (parseFloat(column.width)) {
+            widths.push(column.width);
+          }
+        });
+        const totalWidth = widths.reduce((prev, curr, idx, arr) => parseFloat(prev) + parseFloat(curr), 0);
+        if (this.columns.length - widths.length > 0) {
+          const calWidth = (el.offsetWidth - totalWidth - this.$refs.operator.offsetWidth) / (this.columns.length - widths.length);
+          this.columns.map((column) => {
+            if (!column.width) {
+              this.$set(column, "newWidth", calWidth);
+            }
+          });
+        }
       }
     },
     created () {
@@ -242,8 +250,6 @@
     async mounted() {
       // this.resizeListener();
       this.bindEvents();
-      console.log(this);
-      console.log("table-mounted");
       //列属性搜集
       const columnComponents = this.$slots.default
         .filter((column) => column.componentInstance)

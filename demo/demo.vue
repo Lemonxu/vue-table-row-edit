@@ -13,7 +13,7 @@
       <xt-table-column prop="sex" label="性别"
                         :edit="true"
                         propType="input"
-                        :options="selectOptions" :width="150">
+                        :options="selectOptions" width="150">
         <template slot-scope="scope" type="expand">
           <el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>
           <!--<el-input ></el-input>-->
@@ -29,7 +29,7 @@
       </xt-table-column>
       <xt-table-column prop="hobby" label="爱好" @change="hobbyChange">
       </xt-table-column>-->
-      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :width="100">
+      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip>
       </xt-table-column>
       <!--<xt-table-column label="操作" type="operate">-->
         <!--<template slot-scope="scope">-->
