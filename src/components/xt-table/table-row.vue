@@ -1,32 +1,32 @@
 <template>
-    <tr @click="$emit('rowClick', row)">
-      <td v-for="column in visibleColumns" :key="column.id">
-        <table-cell
-          :row="row"
-          :rowIndex="rowIndex"
-          :column="column"
-          :tableStore="tableStore"
-          :data="data"
-          :rule="rules[column.prop]"
-          :edit="rowEditFlag"
-          :value="row[column.prop]">
-        </table-cell>
-      </td>
-      <td v-if="operator" class="operate-td">
-        <table-cell-slot
-          :column="operateColumn"
-          :row="row"
-          :data="data"
-          :edit="rowEditFlag"
-          :tableStore="tableStore"
-          type="operation"
-        ></table-cell-slot>
-        <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
-        <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>
-        <el-button icon="fa fa-check" size="mini" title="完成" type="success" v-if="rowEditFlag&&successFlag" @click="handleSubmit"></el-button>
-        <el-button icon="fa fa-close" size="mini" title="取消" type="danger" v-if="rowEditFlag&&cancelFlag" @click="handleCancel"></el-button>
-      </td>
-    </tr>
+  <tr @click="$emit('rowClick', row)">
+    <td v-for="column in visibleColumns" :key="column.id" :style="{'text-align': column.align}">
+      <table-cell
+        :row="row"
+        :rowIndex="rowIndex"
+        :column="column"
+        :tableStore="tableStore"
+        :data="data"
+        :rule="rules[column.prop]"
+        :edit="rowEditFlag"
+        :value="row[column.prop]">
+      </table-cell>
+    </td>
+    <td v-if="operator" class="operate-td" :style="{'text-align':operatorAlign}">
+      <table-cell-slot
+        :column="operateColumn"
+        :row="row"
+        :data="data"
+        :edit="rowEditFlag"
+        :tableStore="tableStore"
+        type="operation"
+      ></table-cell-slot>
+      <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
+      <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>
+      <el-button icon="fa fa-check" size="mini" title="完成" type="success" v-if="rowEditFlag&&successFlag" @click="handleSubmit"></el-button>
+      <el-button icon="fa fa-close" size="mini" title="取消" type="danger" v-if="rowEditFlag&&cancelFlag" @click="handleCancel"></el-button>
+    </td>
+  </tr>
 </template>
 
 <script>
@@ -59,7 +59,7 @@
           this.$emit("submit", this.row, this.rowIndex, (status) => {
             //  提交成功或者提交失败
             if (status) {
-            //  提交成功
+              //  提交成功
             }
           });
         }
@@ -82,10 +82,10 @@
       }
     },
     mounted() {
-    //  mounted
+      //  mounted
     },
     components: {
-        TableCell,
+      TableCell,
       TableCellSlot
     },
     computed: {
@@ -105,7 +105,7 @@
           return this.tableRowEdit;
         },
         set() {
-        //  edit状态修改
+          //  edit状态修改
         }
       }
     },
@@ -115,7 +115,7 @@
       };
     },
     watch: {
-    // 检测
+      // 检测
     },
     props: {
       columns: {
@@ -151,7 +151,15 @@
       cancelFlag: Boolean,
       // 编辑按钮显示设置：默认显示
       editFlag: Boolean,
-      tableStore: Object
+      tableStore: Object,
+      operatorWidth: {
+        type: [Number, String],
+        default: () => 80
+      },
+      operatorAlign: {
+        type: String,
+        default: () => "center"
+      }
     }
   };
 </script>

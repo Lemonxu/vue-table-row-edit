@@ -14,10 +14,10 @@
                         :edit="true"
                         propType="input"
                         :options="selectOptions" width="150">
-        <template slot-scope="scope" type="expand">
-          <el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>
-          <!--<el-input ></el-input>-->
-        </template>
+        <!--<template slot-scope="scope" type="expand">-->
+          <!--&lt;!&ndash;<el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>&ndash;&gt;-->
+          <!--&lt;!&ndash;<el-input ></el-input>&ndash;&gt;-->
+        <!--</template>-->
       </xt-table-column>
    <!--   <xt-table-column
         prop="birth"
@@ -29,7 +29,7 @@
       </xt-table-column>
       <xt-table-column prop="hobby" label="爱好" @change="hobbyChange">
       </xt-table-column>-->
-      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip>
+      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :onlyShow="true" align="left">
       </xt-table-column>
       <!--<xt-table-column label="操作" type="operate">-->
         <!--<template slot-scope="scope">-->
@@ -46,6 +46,25 @@
       <!--:data="tableData"-->
       <!--ref="elTable"-->
       <!--style="width: 100%">-->
+      <!--<el-table-column type="expand">-->
+        <!--<xt-table ref="xtTable" :data="data" border :rules="rules" @success="submitData" @delete="deleteData" @add="handleAdd" @edit="handleEdit">-->
+          <!--<xt-table-column prop="sex" label="性别"-->
+                           <!--:edit="true"-->
+                           <!--propType="input"-->
+                           <!--:options="selectOptions" width="150">-->
+            <!--<template slot-scope="scope" type="expand">-->
+              <!--<el-input v-model="scope.row.sex" size="mini" style="width: 100%"></el-input>-->
+            <!--</template>-->
+          <!--</xt-table-column>-->
+          <!--<xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :onlyShow="true">-->
+          <!--</xt-table-column>-->
+          <!--<xt-table-column label="操作" type="operate">-->
+          <!--<template slot-scope="scope">-->
+          <!--<el-button size="mini" type="primary" @click="handlePrint(scope.row)">打印</el-button>-->
+          <!--</template>-->
+          <!--</xt-table-column>-->
+        <!--</xt-table>-->
+      <!--</el-table-column>-->
       <!--<el-table-column-->
         <!--prop="date"-->
         <!--label="日期">-->

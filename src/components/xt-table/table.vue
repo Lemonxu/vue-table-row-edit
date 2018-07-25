@@ -27,6 +27,8 @@
         :cancelFlag="cancelFlag"
         :editFlag="editFlag"
         :successFlag="successFlag"
+        :operatorWidth="operatorWidth"
+        :operatorAlign="operatorAlign"
         :tableRowEdit="isRowEdit(tableRow,index)"
         @submit="handleSubmit"
         @delete="handleDelete"
@@ -63,7 +65,20 @@
     methods: {
       //列基础宽度样式
       columnStyle(column) {
-        return `width:${column.width || column.newWidth || 80}px;min-width:${column.minWidth || 80};max-width:${column.maxWidth || 80}px`;
+        let minWidth = parseMinWidth(column.minWidth), width = parseWidth(column.width || column.newWidth), maxWidth = parseWidth(column.maxWidth);
+        if (!minWidth) {
+          minWidth = 0;
+        }
+        if (minWidth && (minWidth >= width || !width)) {
+          width = minWidth;
+        }
+        if (!maxWidth && maxWidth <= width) {
+          maxWidth = width;
+        }
+        if (maxWidth && maxWidth <= width) {
+          width = maxWidth;
+        }
+        return `text-align:${this.headerAlign};width:${width}px;min-width:${minWidth};max-width:${maxWidth}px;`;
       },
       //整个table验证重置
       resetFields() {
@@ -140,7 +155,7 @@
       handleAdd() {
         this.adds.push(this.data.length);
         this.$emit("add", () => {
-        //  新增回调事件
+          //  新增回调事件
         });
       },
       //取消事件
@@ -210,32 +225,37 @@
         if (this.deleteFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
         if (this.cancelFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
         const buttonLength = defaultButtons.filter((item) => item).length;
-        let operateStyle = `min-width:${buttonLength * 40}px;width:${buttonLength * 40}px`;
-        const operateItem = this.columns.find((column) => !column.hidden && column.type === "operate");
-        if (operateItem) {
-          operateStyle = `min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 40)}px;width:${parseWidth(operateItem.width || buttonLength * 40)}px;max-width:${operateItem.maxWidth || "auto"}`;
+        let operateStyle = `text-align:${this.operatorAlign};min-width:${buttonLength * 40}px;width:${buttonLength * 40}px`;
+        if (parseWidth(this.operatorWidth)) {
+          operateStyle = `text-align:${this.operatorAlign};width:${parseWidth(this.operatorWidth)}px`;
+        } else {
+          const operateItem = this.columns.find((column) => !column.hidden && column.type === "operate");
+          if (operateItem) {
+            operateStyle = `text-align:${this.operatorAlign};min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 40)}px;width:${parseWidth(operateItem.width || buttonLength * 40)}px;max-width:${operateItem.maxWidth || "auto"}`;
+          }
         }
+
         return operateStyle;
       },
       bindEvents() {
         addResizeListener(this.$el, this.resizeListener);
       },
       resizeListener() {
-        const el = this.$el;
         this.tableStore.table = this;
-       this.calColumns();
+        this.calColumns();
       },
       calColumns() {
         // 计算已经用户设置的宽度
         const el = this.$el, widths = [];
+        let calWidth = 0;
         this.columns.map((column) => {
-          if (parseFloat(column.width)) {
-            widths.push(column.width);
+          if (parseFloat(column.width) || parseFloat(column.maxWidth)) {
+            widths.push(column.width || column.maxWidth);
           }
         });
-        const totalWidth = widths.reduce((prev, curr, idx, arr) => parseFloat(prev) + parseFloat(curr), 0);
+        const totalWidth = widths.reduce((prev, curr, idx, arr) => parseFloat(prev) + parseFloat(curr), 0), operatorOffsetWidth = this.$refs.operator ? this.$refs.operator.offsetWidth : 0;
         if (this.columns.length - widths.length > 0) {
-          const calWidth = (el.offsetWidth - totalWidth - this.$refs.operator.offsetWidth) / (this.columns.length - widths.length);
+          calWidth = (el.offsetWidth - totalWidth - operatorOffsetWidth) / (this.columns.length - widths.length);
           this.columns.map((column) => {
             if (!column.width) {
               this.$set(column, "newWidth", calWidth);
@@ -245,7 +265,7 @@
       }
     },
     created () {
-    //  创建完成
+      //  创建完成
     },
     async mounted() {
       // this.resizeListener();
@@ -261,6 +281,7 @@
         Object.keys(columnCom.$options.props).forEach((prop) =>
           columnCom.$watch(prop, () => {
             this.columns = columnComponents.map((column) => new Column(column));
+            this.calColumns();
           })
         );
       });
@@ -269,7 +290,7 @@
       if (this.resizeListener) {removeResizeListener(this.$el, this.resizeListener);}
     },
     watch: {
-    //  检测事件
+      //  检测事件
     },
     computed: {
       //显示需要显示的表头
@@ -285,7 +306,7 @@
           });
         },
         set() {
-        //  设置
+          //  设置
         }
       }
     },
@@ -339,6 +360,18 @@
       editFlag: {
         type: Boolean,
         default: () => true
+      },
+      headerAlign: {
+        type: String,
+        default: () => "center"
+      },
+      operatorWidth: {
+        type: [Number, String],
+        default: () => 80
+      },
+      operatorAlign: {
+        type: String,
+        default: () => "center"
       }
     },
     data() {

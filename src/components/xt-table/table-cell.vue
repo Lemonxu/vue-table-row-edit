@@ -1,42 +1,42 @@
 <template>
-   <div>
-     <!--<template>-->
-       <div v-if="!column.template" :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
-         <template  v-if="(!edit)||(column.onlyShow)">
-           <!--checkbox选择框显示-->
-           <label
-             :class="['cell','el-tooltip',
+  <div>
+    <!--<template>-->
+    <div v-if="!column.template" :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
+      <template  v-if="(!edit)||(column.onlyShow)">
+        <!--checkbox选择框显示-->
+        <label
+          :class="['cell','el-tooltip',
                  {'xt-text-hidden':column.showOverflowTooltip}
                  ]"
-             :title="row[column.props.labelProp]"
-             v-if="column.propType==='checkbox'">
-             <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
-           </label>
-           <!--默认显示值-->
-           <label v-else
-                  :class="['cell','el-tooltip',
+          :title="row[column.props.labelProp]"
+          v-if="column.propType==='checkbox'">
+          <el-checkbox v-model="row[column.prop]" :disabled="true"></el-checkbox>
+        </label>
+        <!--默认显示值-->
+        <label v-else
+               :class="['cell','el-tooltip',
                  { 'xt-text-hidden': column.showOverflowTooltip }
                  ]"
-                  :style="style"
-                  :title="getLabel()">
-             {{getLabel()}}
-           </label>
-         </template>
-         <table-cell-input-field :row="row" :column="column" :tableStore="tableStore" :isEdit="edit" :rowIndex="rowIndex" :data="data"></table-cell-input-field>
-       </div>
-       <div v-else :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
-         <table-cell-slot
-           :row="row"
-            :column="column"
-            :tableStore="tableStore"
-            :data="data"
-            :edit="edit"
-            :rowIndex="rowIndex"
-            :tableCellStyle="style"></table-cell-slot>
-       </div>
-     <!--</template>-->
-     <label style="color:red;font-size:smaller">{{validateMessage}}</label>
-   </div>
+               :style="style"
+               :title="getLabel()">
+          {{getLabel()}}
+        </label>
+      </template>
+      <table-cell-input-field :row="row" :column="column" :tableStore="tableStore" :isEdit="edit" :rowIndex="rowIndex" :data="data"></table-cell-input-field>
+    </div>
+    <div v-else :class="['el-form-item','is-required', {'is-error': validateState === 'error'}]">
+      <table-cell-slot
+        :row="row"
+        :column="column"
+        :tableStore="tableStore"
+        :data="data"
+        :edit="edit"
+        :rowIndex="rowIndex"
+        :tableCellStyle="style"></table-cell-slot>
+    </div>
+    <!--</template>-->
+    <label style="color:red;font-size:smaller">{{validateMessage}}</label>
+  </div>
 </template>
 
 <script>
@@ -66,8 +66,8 @@
     return booleanFlag;
   };
 
-	export default {
-		name: "XtTableCell",
+  export default {
+    name: "XtTableCell",
     methods: {
       load(event) {
         console.log(event);
@@ -117,20 +117,24 @@
         if (minWidth && (minWidth >= width || !width)) {
           width = minWidth;
         }
-        if (!maxWidth || maxWidth <= width) {
+        if (!maxWidth && maxWidth <= width) {
           maxWidth = width;
         }
-       // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
+        if (maxWidth && maxWidth <= width) {
+          width = maxWidth;
+        }
+        // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
         return `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`;
       }
     },
     mounted() {
       //console.log(this.tableStore.table.$el.clientWidth, "table-cell", Bus.ponyTable);
-     /* if (this.$el) {
-        const width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10).toFixed(2);
-        this.styleData = this.getTableCellFieldStyle(width);
-        this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
-      }*/
+
+      /* if (this.$el) {
+         const width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10).toFixed(2);
+         this.styleData = this.getTableCellFieldStyle(width);
+         this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
+       }*/
       this.$parent.$on("resetFields", () => {
         this.resetFields();
       });
@@ -188,7 +192,7 @@
       rowIndex: Number,
       tableStore: Object
     }
-	};
+  };
 </script>
 <style scoped>
   .xt-text-hidden{
@@ -198,7 +202,7 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-.el-form-item{
-  margin-bottom: 0px;
-}
+  .el-form-item{
+    margin-bottom: 0px;
+  }
 </style>
