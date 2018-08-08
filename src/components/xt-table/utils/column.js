@@ -5,7 +5,7 @@ export default class Column {
     const properties = pick(columnComponent, [
       "label", "prop", "type", "propType", "options", "props", "filterable", "onlyShow", "clearable", "maxlength", "minlength", "max", "min",
       "placeholder", "remote", "remoteMethod", "showOverflowTooltip", "format", "valueFormat", "width", "minWidth", "maxWidth", "disabled",
-      "editable", "sortable", "sortBy", "filterOn", "formatter", "hidden", "cellClass", "headerClass", "align"]);
+      "editable", "sortable", "sortBy", "filterOn", "formatter", "hidden", "cellClass", "headerClass", "align", "rightAppearance"]);
     for (const property in properties) {
       if (Object.prototype.hasOwnProperty.call(properties, property)) {
         this[property] = columnComponent[property];

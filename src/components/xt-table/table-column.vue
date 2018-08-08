@@ -78,7 +78,8 @@
       align: {
         type: String,
         default: () => "left"
-      }
+      },
+      rightAppearance: Boolean
     },
     created() {
       Bus.$on(this.prop + "table-cell-change", ({value, row, item}) => {

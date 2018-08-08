@@ -28,6 +28,7 @@ table th {
   letter-spacing: 1px;
   background-color: #eef1f6;
 }
+
 button{
   display: inline-block;
   line-height: 1;
@@ -54,6 +55,10 @@ button{
 .label-button{
   padding: 5px 10px 5px 10px;
   border-radius: 5px;
+}
+
+.table-row-highlight{
+  background-color: #D3E9FA;
 }
 
 .button--primary {

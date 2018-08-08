@@ -32,7 +32,8 @@
         :data="data"
         :edit="edit"
         :rowIndex="rowIndex"
-        :tableCellStyle="style"></table-cell-slot>
+        :tableCellStyle="style"
+        :$el="$el"></table-cell-slot>
     </div>
     <!--</template>-->
     <label style="color:red;font-size:smaller">{{validateMessage}}</label>
@@ -115,26 +116,29 @@
           minWidth = 0;
         }
         if (minWidth && (minWidth >= width || !width)) {
+          if (minWidth < 0) {
+            minWidth = -minWidth;
+          }
           width = minWidth;
         }
         if (!maxWidth && maxWidth <= width) {
+          if (width < 0) {
+            width = -width;
+          }
           maxWidth = width;
         }
         if (maxWidth && maxWidth <= width) {
+          if (maxWidth < 0) {
+            maxWidth = -maxWidth;
+          }
           width = maxWidth;
         }
-        // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`);
+        // console.log(realWidth, `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`, this.column.label);
         return `text-align:${this.column.align};min-width:${minWidth}px;width:${width}px;max-width:${maxWidth}px`;
       }
     },
     mounted() {
       //console.log(this.tableStore.table.$el.clientWidth, "table-cell", Bus.ponyTable);
-
-      /* if (this.$el) {
-         const width = parseInt(this.tableStore.table.$el.clientWidth / this.tableStore.table.columns.length, 10).toFixed(2);
-         this.styleData = this.getTableCellFieldStyle(width);
-         this.tableStore.tableCellSlot = {class: ["cell", "el-tooltip", {"xt-text-hidden": this.column.showOverflowTooltip}], style: this.styleData};
-       }*/
       this.$parent.$on("resetFields", () => {
         this.resetFields();
       });
@@ -175,6 +179,7 @@
         deep: true
       },
       column: {
+        immediate: true,
         handler: function (val, oldVal) {
           this.styleData = this.getTableCellFieldStyle(val.width || val.newWidth);
         },

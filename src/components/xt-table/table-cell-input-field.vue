@@ -40,7 +40,8 @@
         size="mini"
         :placeholder="column.placeholder"
         :disabled="column.disabled"
-        style="width: 100%"/>
+        style="width: 100%"
+        :rightAppearance="column.rightAppearance"/>
       <!--下拉框-->
       <el-select
         v-else-if="column.propType==='select'"

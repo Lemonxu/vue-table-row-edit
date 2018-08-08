@@ -19,6 +19,9 @@
         :row="tableRow.row"
         :rowIndex="index"
         :columns="columns"
+        :class="[
+        {'table-row-highlight': currentRow.currentRowIndex === index}
+        ]"
         :tableStore="tableStore"
         :data="data"
         :rules="rules"
@@ -34,10 +37,11 @@
         @delete="handleDelete"
         @cancel="handleCancel(tableRow.row,index)"
         @edit="handleEdit(tableRow.row,index)"
+        @click.native="handleRowClick(tableRow.row,tableRow,index)"
       ></table-row>
       <tr v-if="tableData.length===0">
-        <td :colspan="headColumns.length+1">
-          暂无数据
+        <td :colspan="headColumns.length+1" style="text-align: center">
+          {{ emptyText || "暂无数据" }}
         </td>
       </tr>
       </tbody>
@@ -70,12 +74,21 @@
           minWidth = 0;
         }
         if (minWidth && (minWidth >= width || !width)) {
+          if (minWidth < 0) {
+            minWidth = -minWidth;
+          }
           width = minWidth;
         }
         if (!maxWidth && maxWidth <= width) {
+          if (width < 0) {
+            width = -width;
+          }
           maxWidth = width;
         }
         if (maxWidth && maxWidth <= width) {
+          if (maxWidth < 0) {
+            maxWidth = -maxWidth;
+          }
           width = maxWidth;
         }
         return `text-align:${this.headerAlign};width:${width}px;min-width:${minWidth};max-width:${maxWidth}px;`;
@@ -156,7 +169,7 @@
         this.adds.push(this.data.length);
         this.$emit("add", () => {
           //  新增回调事件
-        });
+        }, this.data);
       },
       //取消事件
       handleCancel(row, rowIndex) {
@@ -217,6 +230,11 @@
           callback(status);
         });
       },
+      handleRowClick(row, tableRow, rowIndex) {
+        console.log(row, tableRow, rowIndex);
+        this.currentRow = {currentRowIndex: rowIndex, row: row, edit: this.isRowEdit(tableRow, rowIndex)};
+        this.$emit("row-click", row, rowIndex, tableRow);
+      },
       //获取操作列宽度
       getOperateStyle() {
         const defaultButtons = [];
@@ -227,7 +245,7 @@
         const buttonLength = defaultButtons.filter((item) => item).length;
         let operateStyle = `text-align:${this.operatorAlign};min-width:${buttonLength * 40}px;width:${buttonLength * 40}px`;
         if (parseWidth(this.operatorWidth)) {
-          operateStyle = `text-align:${this.operatorAlign};width:${parseWidth(this.operatorWidth)}px`;
+          operateStyle = `text-align:${this.operatorAlign};width:${parseWidth(this.operatorWidth)}px;min-width:${parseWidth(this.operatorWidth)}px;max-width:${parseWidth(this.operatorWidth)}px`;
         } else {
           const operateItem = this.columns.find((column) => !column.hidden && column.type === "operate");
           if (operateItem) {
@@ -372,7 +390,11 @@
       operatorAlign: {
         type: String,
         default: () => "center"
-      }
+      },
+      //高亮当前行
+      highlightCurrentRow: Boolean,
+      //数据为空时的提示
+      emptyText: String
     },
     data() {
       const tableStore = {table: this, tableCellSlot: {}};
@@ -389,7 +411,8 @@
         },
         pagination: null,
         localSettings: {},
-        copyOldList: []
+        copyOldList: [],
+        currentRow: {currentRowIndex: null, row: {}, edit: false}
       };
     },
     components: {
