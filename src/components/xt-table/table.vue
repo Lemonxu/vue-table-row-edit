@@ -20,7 +20,7 @@
         :rowIndex="index"
         :columns="columns"
         :class="[
-        {'table-row-highlight': currentRow.currentRowIndex === index}
+        {'table-row-highlight': highlightCurrentRow && currentRow.currentRowIndex === index}
         ]"
         :tableStore="tableStore"
         :data="data"
@@ -33,10 +33,13 @@
         :operatorWidth="operatorWidth"
         :operatorAlign="operatorAlign"
         :tableRowEdit="isRowEdit(tableRow,index)"
+        :tableRow="tableRow"
+        :rowEditMethod="rowEditMethod"
+        :rowDeleteMethod="rowDeleteMethod"
         @submit="handleSubmit"
         @delete="handleDelete"
         @cancel="handleCancel(tableRow.row,index)"
-        @edit="handleEdit(tableRow.row,index)"
+        @edit="handleEdit"
         @click.native="handleRowClick(tableRow.row,tableRow,index)"
       ></table-row>
       <tr v-if="tableData.length===0">
@@ -199,7 +202,7 @@
         });
       },
       //编辑事件
-      handleEdit(row, rowIndex) {
+      handleEdit(row, rowIndex, editFlag) {
         const edit = () => {
           const editFlag = this.edits.includes(rowIndex);
           if (!editFlag) {
@@ -217,7 +220,7 @@
         edit();
         this.$emit("edit", row, () => {
           edit();
-        });
+        }, editFlag);
       },
       //提交事件
       handleSubmit(row, rowIndex, callback) {
@@ -231,7 +234,6 @@
         });
       },
       handleRowClick(row, tableRow, rowIndex) {
-        console.log(row, tableRow, rowIndex);
         this.currentRow = {currentRowIndex: rowIndex, row: row, edit: this.isRowEdit(tableRow, rowIndex)};
         this.$emit("row-click", row, rowIndex, tableRow);
       },
@@ -394,7 +396,9 @@
       //高亮当前行
       highlightCurrentRow: Boolean,
       //数据为空时的提示
-      emptyText: String
+      emptyText: String,
+      rowEditMethod: Function,
+      rowDeleteMethod: Function
     },
     data() {
       const tableStore = {table: this, tableCellSlot: {}};

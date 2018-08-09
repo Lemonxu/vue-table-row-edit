@@ -21,8 +21,8 @@
         :tableStore="tableStore"
         type="operation"
       ></table-cell-slot>
-      <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag" @click="handleEdit"></el-button>
-      <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag" @click="handleDelete"></el-button>
+      <el-button icon="fa fa-pencil" size="mini" title="修改" type="warning" v-if="!rowEditFlag&&editFlag&&editFlagMethod()" @click="handleEdit"></el-button>
+      <el-button icon="fa fa-trash-o" size="mini" title="删除" type="danger" v-if="!rowEditFlag&&deleteFlag&&deleteFlagMethod()" @click="handleDelete"></el-button>
       <el-button icon="fa fa-check" size="mini" title="完成" type="success" v-if="rowEditFlag&&successFlag" @click="handleSubmit"></el-button>
       <el-button icon="fa fa-close" size="mini" title="取消" type="danger" v-if="rowEditFlag&&cancelFlag" @click="handleCancel"></el-button>
     </td>
@@ -35,9 +35,23 @@
 
   export default {
     methods: {
+      editFlagMethod() {
+        if (this.rowEditMethod) {
+          return this.rowEditMethod(this.row, this.edit);
+        } else {
+          return true;
+        }
+      },
+      deleteFlagMethod() {
+        if (this.rowDeleteMethod) {
+          return this.rowDeleteMethod(this.row, this.edit);
+        } else {
+          return true;
+        }
+      },
       // 点击编辑事件
       handleEdit() {
-        this.$emit("edit");
+        this.$emit("edit", this.row, this.rowIndex, this.tableRow.editFlag);
       },
       // 取消编辑
       handleCancel() {
@@ -159,7 +173,13 @@
       operatorAlign: {
         type: String,
         default: () => "center"
-      }
+      },
+      tableRow: {
+        type: Object,
+        default: () => ({})
+      },
+      rowEditMethod: Function,
+      rowDeleteMethod: Function
     }
   };
 </script>
