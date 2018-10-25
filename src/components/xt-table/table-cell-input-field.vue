@@ -45,7 +45,7 @@
       <!--下拉框-->
       <el-select
         v-else-if="column.propType==='select'"
-        v-model.lazy="row[column.prop]"
+        v-model="row[column.prop]"
         size="mini"
         @change="handleChange"
         :filterable="column.filterable"

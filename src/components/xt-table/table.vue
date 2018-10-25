@@ -15,7 +15,7 @@
       <table-row
         ref="tableRow"
         v-for="(tableRow,index) in tableData"
-        :key="index"
+        :key="tableRow._id"
         :row="tableRow.row"
         :rowIndex="index"
         :columns="columns"
@@ -155,7 +155,10 @@
           if (addIndex > rowIndex && subtractFlag) {
             addIndex = addIndex - 1;
           }
-          newAdds.push(addIndex);
+          const exitNewAddsItem = newAdds.find((key) => key === addIndex);
+          if (!exitNewAddsItem) {
+            newAdds.push(addIndex);
+          }
         });
         this.adds = newAdds;
         const newEdits = [];
@@ -163,13 +166,36 @@
           if (editIndex >= rowIndex && subtractFlag) {
             editIndex = editIndex - 1;
           }
-          newEdits.push(editIndex);
+          const exitNewEditItem = newEdits.find((key) => key === editIndex);
+          if (!exitNewEditItem) {
+            newEdits.push(editIndex);
+          }
         });
         this.edits = newEdits;
       },
+      async reverseKeys() {
+        const edits = [], adds = [];
+         await this.edits.map((editKey) => {
+          editKey = parseInt(editKey, 10) + 1;
+          edits.push(editKey);
+        });
+        await this.adds.map((addKey) => {
+          addKey = parseInt(addKey, 10) + 1;
+          adds.push(addKey);
+        });
+        this.edits = edits;
+        this.adds = adds;
+        return true;
+      },
       //新增事件
       handleAdd() {
-        this.adds.push(this.data.length);
+        if (this.reverse) {
+          this.reverseKeys().then(() => {
+            this.adds.push(0);
+          });
+        } else {
+          this.adds.push(this.data.length);
+        }
         this.$emit("add", () => {
           //  新增回调事件
         }, this.data);
@@ -177,7 +203,7 @@
       //取消事件
       handleCancel(row, rowIndex) {
         const isAddFlag = this.adds.includes(rowIndex);
-        if (isAddFlag) {
+        if (isAddFlag || this.type === "add") {
           this.data.remove(row);
           this.setRowIndex(rowIndex);
         } else {
@@ -320,9 +346,10 @@
       tableData: {
         get() {
           return this.data.map((item, index) => {
+            const keyItem = {index: index, _id: Math.random()};
             const isAddFlag = this.adds.includes(index);
             const isEditFlag = this.edits.includes(index);
-            return {row: item, rowConfig: {edit: this.type === "add" || isAddFlag || isEditFlag}};
+            return {row: item, rowConfig: {edit: this.type === "add" || isAddFlag || isEditFlag}, _id: keyItem._id};
           });
         },
         set() {
@@ -398,7 +425,8 @@
       //数据为空时的提示
       emptyText: String,
       rowEditMethod: Function,
-      rowDeleteMethod: Function
+      rowDeleteMethod: Function,
+      reverse: Boolean
     },
     data() {
       const tableStore = {table: this, tableCellSlot: {}};
@@ -416,7 +444,8 @@
         pagination: null,
         localSettings: {},
         copyOldList: [],
-        currentRow: {currentRowIndex: null, row: {}, edit: false}
+        currentRow: {currentRowIndex: null, row: {}, edit: false},
+        tableKeys: []
       };
     },
     components: {
