@@ -4,7 +4,7 @@
   "description": "this is a plugin for table edit",
   "author": "Lemonxu <yunfeng7@foxmail.com>",
   "private": false,
-  "main": "dist/vue-table-row-edit.min.js",
+  "main": "dist/static/vue-table-row-edit.min.js",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
