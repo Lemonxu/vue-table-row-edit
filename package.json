@@ -29,6 +29,7 @@
   "homepage": "https://github.com/Lemonxu/vue-table-row-edit/blob/master/README.md",
   "dependencies": {
     "async-validator": "~1.8.1",
+    "babel-polyfill": "^6.26.0",
     "deepmerge": "~1.2.0",
     "element-ui": "~2.3.9",
     "font-awesome": "~4.7.0",

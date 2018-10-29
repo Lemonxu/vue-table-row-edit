@@ -15,6 +15,7 @@
       <table-row
         ref="tableRow"
         v-for="(tableRow,index) in tableData"
+        :getKey="getTableKey(tableRow, index)"
         :key="tableRow._id"
         :row="tableRow.row"
         :rowIndex="index"
@@ -32,15 +33,15 @@
         :successFlag="successFlag"
         :operatorWidth="operatorWidth"
         :operatorAlign="operatorAlign"
-        :tableRowEdit="isRowEdit(tableRow,index)"
+        :tableRowEdit="isRowEdit(tableRow,index,tableRow._id)"
         :tableRow="tableRow"
         :rowEditMethod="rowEditMethod"
         :rowDeleteMethod="rowDeleteMethod"
         @submit="handleSubmit"
         @delete="handleDelete"
-        @cancel="handleCancel(tableRow.row,index)"
+        @cancel="handleCancel(tableRow.row,index,tableRow._id)"
         @edit="handleEdit"
-        @click.native="handleRowClick(tableRow.row,tableRow,index)"
+        @click.native="handleRowClick(tableRow.row, tableRow, index, tableRow._id)"
       ></table-row>
       <tr v-if="tableData.length===0">
         <td :colspan="headColumns.length+1" style="text-align: center">
@@ -60,7 +61,7 @@
   import TableRow from "./table-row";
   import ElementUI from "element-ui";
   import Vue from "vue";
-  import {parseWidth, parseMinWidth} from "./utils/helpers";
+  import {parseWidth, parseMinWidth, columnStyle, requiredStyle} from "./utils/helpers";
   import {addResizeListener, removeResizeListener} from "./utils/resize-event";
   import ResizeObserver from "resize-observer-polyfill";
   import Bus from "./bus";
@@ -70,31 +71,16 @@
   export default {
     name: "XtTable",
     methods: {
-      //列基础宽度样式
+      getTableKey(tableRow, index) {
+        const exitKey = this.tableKeys.find((item) => item.index === index);
+        if (!exitKey) {
+          this.tableKeys.push({index: index, _id: tableRow._id});
+        }
+        return true;
+      },
+      //列基础宽度样式___表头列宽度
       columnStyle(column) {
-        let minWidth = parseMinWidth(column.minWidth), width = parseWidth(column.width || column.newWidth), maxWidth = parseWidth(column.maxWidth);
-        if (!minWidth) {
-          minWidth = 0;
-        }
-        if (minWidth && (minWidth >= width || !width)) {
-          if (minWidth < 0) {
-            minWidth = -minWidth;
-          }
-          width = minWidth;
-        }
-        if (!maxWidth && maxWidth <= width) {
-          if (width < 0) {
-            width = -width;
-          }
-          maxWidth = width;
-        }
-        if (maxWidth && maxWidth <= width) {
-          if (maxWidth < 0) {
-            maxWidth = -maxWidth;
-          }
-          width = maxWidth;
-        }
-        return `text-align:${this.headerAlign};width:${width}px;min-width:${minWidth};max-width:${maxWidth}px;`;
+        return columnStyle(column, this.headerAlign);
       },
       //整个table验证重置
       resetFields() {
@@ -115,34 +101,14 @@
       },
       // 是否需要验证头部标记
       isRequired(head) {
-        let required = false;
-        if (!head) {return false;}
-        const items = this.rules ? this.rules[head.prop] : "";
-        const headType = items ? (Array.isArray(items) ? "array" : "object") : "";
-        switch (headType) {
-          case "array":
-            if (items) {
-              items.map((item) => {
-                if (item.required) {
-                  required = true;
-                  return false;
-                }
-              });
-            }
-            break;
-          case "object":
-            if (items.required) {required = true;}
-            break;
-          default:break;
-        }
-        return required;
+        return requiredStyle(head, this.rules);
       },
       //判断该行是否为编辑中
       isRowEdit(tableRow, rowIndex) {
         return tableRow.rowConfig.edit;
       },
       //设置该行是否可编辑
-      setRowIndex(rowIndex, subtractFlag = true) {
+      setRowIndex(rowIndex, rowId, subtractFlag = true) {
         const isAddFlag = this.adds.includes(rowIndex), isEditFlag = this.edits.includes(rowIndex);
         if (isAddFlag) {
           this.adds.remove(rowIndex);
@@ -172,6 +138,16 @@
           }
         });
         this.edits = newEdits;
+        //删除已取消的id
+        const exitKey = this.tableKeys.find((keyItem) => keyItem.index === rowIndex || rowId === keyItem._id);
+        if (exitKey) {
+          this.tableKeys.remove(exitKey);
+          this.tableKeys.map((keyItem) => {
+            if (keyItem.index >= exitKey.index && keyItem.index !== 0) {
+              keyItem.index = keyItem.index - 1;
+            }
+          });
+        }
       },
       async reverseKeys() {
         const edits = [], adds = [];
@@ -201,13 +177,13 @@
         }, this.data);
       },
       //取消事件
-      handleCancel(row, rowIndex) {
+      handleCancel(row, rowIndex, rowId) {
         const isAddFlag = this.adds.includes(rowIndex);
         if (isAddFlag || this.type === "add") {
           this.data.remove(row);
-          this.setRowIndex(rowIndex);
+          this.setRowIndex(rowIndex, rowId);
         } else {
-          this.setRowIndex(rowIndex, false);
+          this.setRowIndex(rowIndex, rowId, false);
         }
         // 赋值取消前的数据
         const copyOldItem = this.copyOldList.find((val) => val.id === rowIndex);
@@ -217,18 +193,18 @@
         }
       },
       // 删除事件
-      handleDelete(row, rowIndex, callback) {
+      handleDelete(row, rowIndex, rowId, callback) {
         this.$emit("delete", row, (status) => {
           if (status) {
             this.data.remove(row);
-            this.setRowIndex(rowIndex);
+            this.setRowIndex(rowIndex, rowId);
             this.resetFields();
           }
           callback(status);
         });
       },
       //编辑事件
-      handleEdit(row, rowIndex, editFlag) {
+      handleEdit(row, rowIndex, rowId, editFlag) {
         const edit = () => {
           const editFlag = this.edits.includes(rowIndex);
           if (!editFlag) {
@@ -249,7 +225,7 @@
         }, editFlag);
       },
       //提交事件
-      handleSubmit(row, rowIndex, callback) {
+      handleSubmit(row, rowIndex, rowId, callback) {
         this.$emit("success", row, (status) => {
           if (status) {
             this.setRowIndex(rowIndex, false);
@@ -259,37 +235,35 @@
           callback(status);
         });
       },
-      handleRowClick(row, tableRow, rowIndex) {
-        this.currentRow = {currentRowIndex: rowIndex, row: row, edit: this.isRowEdit(tableRow, rowIndex)};
+      //点击行事件
+      handleRowClick(row, tableRow, rowIndex, rowId) {
+        this.currentRow = {currentRowIndex: rowIndex, row: row, edit: this.isRowEdit(tableRow, rowIndex), rowId: rowId};
         this.$emit("row-click", row, rowIndex, tableRow);
       },
       //获取操作列宽度
       getOperateStyle() {
-        const defaultButtons = [];
-        if (this.editFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
-        if (this.successFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
-        if (this.deleteFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
-        if (this.cancelFlag) {defaultButtons.push(true);} else {defaultButtons.push(false);}
+        const defaultButtons = [this.editFlag, this.successFlag, this.deleteFlag, this.cancelFlag];
         const buttonLength = defaultButtons.filter((item) => item).length;
-        let operateStyle = `text-align:${this.operatorAlign};min-width:${buttonLength * 40}px;width:${buttonLength * 40}px`;
+        let operateStyle = `text-align:${this.operatorAlign};min-width:${buttonLength * 45}px;width:${buttonLength * 45}px`;
         if (parseWidth(this.operatorWidth)) {
           operateStyle = `text-align:${this.operatorAlign};width:${parseWidth(this.operatorWidth)}px;min-width:${parseWidth(this.operatorWidth)}px;max-width:${parseWidth(this.operatorWidth)}px`;
         } else {
           const operateItem = this.columns.find((column) => !column.hidden && column.type === "operate");
           if (operateItem) {
-            operateStyle = `text-align:${this.operatorAlign};min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 40)}px;width:${parseWidth(operateItem.width || buttonLength * 40)}px;max-width:${operateItem.maxWidth || "auto"}`;
+            operateStyle = `text-align:${this.operatorAlign};min-width:${parseMinWidth(operateItem.minWidth || buttonLength * 45)}px;width:${parseWidth(operateItem.width || buttonLength * 45)}px;max-width:${operateItem.maxWidth || "auto"}`;
           }
         }
-
         return operateStyle;
       },
       bindEvents() {
         addResizeListener(this.$el, this.resizeListener);
       },
+      //根据浏览器大小变化进行变化
       resizeListener() {
         this.tableStore.table = this;
         this.calColumns();
       },
+      //计算列宽度
       calColumns() {
         // 计算已经用户设置的宽度
         const el = this.$el, widths = [];
@@ -332,6 +306,7 @@
         );
       });
     },
+    //销毁监听组件
     destroyed() {
       if (this.resizeListener) {removeResizeListener(this.$el, this.resizeListener);}
     },
@@ -347,15 +322,41 @@
         get() {
           return this.data.map((item, index) => {
             const keyItem = {index: index, _id: Math.random()};
+            const keys = this.tableKeys.find((key) => key.index === index);
+            if (keys) {
+              keyItem._id = keys._id;
+            }
             const isAddFlag = this.adds.includes(index);
             const isEditFlag = this.edits.includes(index);
             return {row: item, rowConfig: {edit: this.type === "add" || isAddFlag || isEditFlag}, _id: keyItem._id};
           });
         },
-        set() {
+        set(val) {
           //  设置
         }
       }
+    },
+    data() {
+      const tableStore = {table: this, tableCellSlot: {}};
+      return {
+        tableStore,
+        columns: [],
+        adds: [],
+        edits: [],
+        filter: "",
+        sort: {
+          fieldName: "",
+          order: ""
+        },
+        pagination: null,
+        localSettings: {},
+        copyOldList: [],
+        currentRow: {currentRowIndex: null, row: {}, edit: false},
+        tableKeys: []
+      };
+    },
+    components: {
+      TableRow
     },
     props: {
       data: {
@@ -426,30 +427,7 @@
       emptyText: String,
       rowEditMethod: Function,
       rowDeleteMethod: Function,
-      reverse: Boolean
-    },
-    data() {
-      const tableStore = {table: this, tableCellSlot: {}};
-      return {
-        tableStore,
-        columns: [],
-        rows: [],
-        adds: [],
-        edits: [],
-        filter: "",
-        sort: {
-          fieldName: "",
-          order: ""
-        },
-        pagination: null,
-        localSettings: {},
-        copyOldList: [],
-        currentRow: {currentRowIndex: null, row: {}, edit: false},
-        tableKeys: []
-      };
-    },
-    components: {
-      TableRow
+      reverse: Boolean //新增的数据在上面
     }
   };
 </script>

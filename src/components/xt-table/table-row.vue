@@ -12,7 +12,7 @@
         :value="row[column.prop]">
       </table-cell>
     </td>
-    <td v-if="operator" class="operate-td" :style="{'text-align':operatorAlign}">
+    <td v-if="operator" class="operate-td" :style="{'text-align':operatorAlign, 'width': '120px'}">
       <table-cell-slot
         :column="operateColumn"
         :row="row"
@@ -51,7 +51,7 @@
       },
       // 点击编辑事件
       handleEdit() {
-        this.$emit("edit", this.row, this.rowIndex, this.tableRow.editFlag);
+        this.$emit("edit", this.row, this.rowIndex, this.tableRow._id, this.tableRow.editFlag);
       },
       // 取消编辑
       handleCancel() {
@@ -70,7 +70,7 @@
           //  验证未通过
           // console.error("验证未通过");
         } else {
-          this.$emit("submit", this.row, this.rowIndex, (status) => {
+          this.$emit("submit", this.row, this.rowIndex, this.tableRow._id, (status) => {
             //  提交成功或者提交失败
             if (status) {
               //  提交成功
@@ -80,7 +80,7 @@
       },
       //删除事件
       handleDelete() {
-        this.$emit("delete", this.row, this.rowIndex, (status) => {
+        this.$emit("delete", this.row, this.rowIndex, this.tableRow._id, (status) => {
           //  删除成功或者删除失败
           // console.log(status);
         });

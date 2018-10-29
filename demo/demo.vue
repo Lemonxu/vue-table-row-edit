@@ -2,7 +2,7 @@
   <div id="app">
     <h1>{{ msg }}</h1>
     <!--<el-button size="mini" type="primary" @click="handleAdd" style="float: left">新增</el-button>-->
-    <xt-table ref="xtTable" :data="data" border :rules="rules" @success="submitData" @delete="deleteData" @add="handleAdd" @edit="handleEdit">
+    <xt-table ref="xtTable" :data="data" border :rules="rules" @success="submitData" @delete="deleteData" @add="handleAdd" @edit="handleEdit" style="width: 100%">
       <!--<xt-table-column prop="index" label="序号">
         <template slot-scope="scope">
           {{scope.$index}}
@@ -29,7 +29,7 @@
       </xt-table-column>
       <xt-table-column prop="hobby" label="爱好" @change="hobbyChange">
       </xt-table-column>-->
-      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :onlyShow="true" align="left">
+      <xt-table-column prop="hobby" label="爱好" @change="hobbyChange" show-overflow-tooltip :onlyShow="false" align="left" :min-width="200">
       </xt-table-column>
       <!--<xt-table-column label="操作" type="operate">-->
         <!--<template slot-scope="scope">-->
@@ -185,7 +185,8 @@
         selectOptions: [{name: "男", value: "男"}, {name: "女", value: "女"}],
         rules: {
           name: [{required: true, message: "请输入姓名", trigger: "change"}],
-          sex: [{required: true, message: "请输入性别", trigger: "change"}]
+          sex: [{required: true, message: "请输入性别", trigger: "change"}],
+          hobby: [{message: "请输入爱好", trigger: "change"}]
         },
         tableData: [{
           date: "2016-05-02",
