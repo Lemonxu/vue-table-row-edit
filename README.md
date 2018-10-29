@@ -1,7 +1,7 @@
 # vue-table-row-edit
 ---------------------------------------------------
 
-## 当前版本：v2.0.1
+## 当前版本：v2.0.4
 [更新日志](https://github.com/Lemonxu/vue-table-row-edit/releases)
 
 ------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ npm install vue-table-row-edit --save
 import Vue from 'vue'
 import App from './App'
 import VueTableRowEdit from 'vue-table-row-edit'
-import 'vue-table-row-edit/dist/vue-table-row-edit.min.css'
+import 'vue-table-row-edit/dist/static/vue-table-row-edit.min.css'
 
 Vue.use(ElementUI)
 Vue.use(VueTableRowEdit)
