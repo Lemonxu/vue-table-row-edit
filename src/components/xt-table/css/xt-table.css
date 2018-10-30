@@ -4,7 +4,7 @@
 .lemon-cell{
   height: 1rem;
 }
-table {
+.lemon-table {
   border: 1px solid #ccc;
   width: 100%;
   padding:0;
@@ -12,17 +12,17 @@ table {
   border-spacing: 0;
   margin: 0 auto;
 }
-table tr {
+.lemon-table tr {
   border: 1px solid #ddd;
   padding: 5px;
 }
 
-table th, table td {
+.lemon-table th, .lemon-table td {
   padding: 8px;
   border: 1px solid #ddd;
 }
 
-table th {
+.lemon-table th {
   text-transform: none;
   font-size: 14px;
   letter-spacing: 1px;

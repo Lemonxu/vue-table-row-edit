@@ -1,7 +1,7 @@
 <template>
   <div class="xt-table">
     <el-button icon="fa fa-plus" size="mini" style="float: left" type="primary" v-if="add" @click="handleAdd">&nbsp;{{addLabel}}</el-button>
-    <table class="table-border table__header" ref="table">
+    <table class="lemon-table table-border table__header" ref="table">
       <thead>
       <tr>
         <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :style="columnStyle(head)">

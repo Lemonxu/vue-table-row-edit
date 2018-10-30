@@ -28,8 +28,8 @@ module.exports = {
   },
   output: {
     path: config.build.assetsRoot,
-    // filename: '[name].js',
-    filename: 'vue-table-row-edit.min.js',
+    filename: '[name].js',
+    // filename: 'vue-table-row-edit.min.js',
     publicPath: process.env.NODE_ENV === 'production'
       ? config.build.assetsPublicPath
       : config.dev.assetsPublicPath
