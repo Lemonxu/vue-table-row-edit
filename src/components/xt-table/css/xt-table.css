@@ -12,17 +12,25 @@
   border-spacing: 0;
   margin: 0 auto;
 }
-.lemon-table tr {
+.xt-table table {
+  border: 1px solid #ccc;
+  width: 100%;
+  padding:0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0 auto;
+}
+.xt-table table tr {
   border: 1px solid #ddd;
-  padding: 5px;
+  padding: 0 5px;
 }
 
-.lemon-table th, .lemon-table td {
+.xt-table table th, .xt-table table td {
   padding: 8px;
   border: 1px solid #ddd;
 }
 
-.lemon-table th {
+.xt-table table th {
   text-transform: none;
   font-size: 14px;
   letter-spacing: 1px;

@@ -16,7 +16,7 @@ export default {
   render(createElement, {props, slots}) {
     const data = {attrs: {}};
     if (props.tableStore.tableCellSlot) {
-      data.class = `${props.edit ? "" : props.tableStore.tableCellSlot.class || "cell el-tooltip"} ${props.column.showOverflowTooltip ? "xt-text-hidden cell el-tooltip" : "cell el-tooltip"}`;
+      data.class = `${props.edit ? "" : props.tableStore.tableCellSlot.class || "cell el-tooltip"} ${props.column.showOverflowTooltip ? "xt-text-hidden" : ""}`;
       if (props.type !== "operation") {
         data.style = props.tableCellStyle || props.tableStore.tableCellSlot.style || "";
       }
