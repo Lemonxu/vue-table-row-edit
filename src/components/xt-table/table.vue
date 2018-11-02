@@ -282,29 +282,36 @@
             }
           });
         }
+      },
+      mountedSlots() {
+        //列属性搜集
+        const columnComponents = this.$slots.default
+          .filter((column) => column.componentInstance)
+          .map((column) => column.componentInstance);
+        // this.columns = columnComponents.map((column) => new Column(column));
+
+        columnComponents.forEach((columnCom) => {
+          Object.keys(columnCom.$options.props).forEach((prop) =>
+            columnCom.$watch(prop, () => {
+              const newColumnComponents = columnComponents.filter((column) => column.if);
+              this.columns = newColumnComponents.map((column) => new Column(column));
+              this.calColumns();
+            })
+          );
+        });
       }
     },
     created () {
       //  创建完成
     },
     async mounted() {
+      console.log("XtTable");
       // this.resizeListener();
       this.bindEvents();
-      //列属性搜集
-      const columnComponents = this.$slots.default
-        .filter((column) => column.componentInstance)
-        .map((column) => column.componentInstance);
-
-      this.columns = columnComponents.map((column) => new Column(column));
-
-      columnComponents.forEach((columnCom) => {
-        Object.keys(columnCom.$options.props).forEach((prop) =>
-          columnCom.$watch(prop, () => {
-            this.columns = columnComponents.map((column) => new Column(column));
-            this.calColumns();
-          })
-        );
-      });
+      this.mountedSlots();
+      // Bus.$on("table-mounted", () => {
+      //  this.mountedSlots();
+      // });
     },
     //销毁监听组件
     destroyed() {
@@ -312,6 +319,12 @@
     },
     watch: {
       //  检测事件
+      $slots: {
+        handler(val, oldVal) {
+          console.log(val, "SLot");
+        },
+        deep: true
+      }
     },
     computed: {
       //显示需要显示的表头

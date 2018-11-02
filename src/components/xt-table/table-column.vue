@@ -79,7 +79,11 @@
         type: String,
         default: () => "left"
       },
-      rightAppearance: Boolean
+      rightAppearance: Boolean,
+      if: {
+        type: Boolean,
+        default: () => true
+      }
     },
     created() {
       Bus.$on(this.prop + "table-cell-change", ({value, row, item}) => {
