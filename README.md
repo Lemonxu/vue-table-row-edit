@@ -1,7 +1,7 @@
 # vue-table-row-edit
 ---------------------------------------------------
 
-## 当前版本：v2.0.10
+## 当前版本：v2.0.11
 [更新日志](https://github.com/Lemonxu/vue-table-row-edit/releases)
 
 ------------------------------------------------------------------------------
@@ -82,6 +82,7 @@ new Vue({
 <tr><td>remote</td><td>远程搜索启动,仅propType="select"可用</td><td>Boolean</td><td>true/false</td><td>false</td></tr>
 <tr><td>remoteMethod</td><td>远程搜索方法</td><td>Function</td><td>---</td><td>---</td></tr>
 <tr><td>width</td><td>宽度设置</td><td>Number</td><td>---</td><td>80</td></tr>
+<tr><td>if</td><td>是否显示</td><td>Boolean</td><td>---</td><td>true</td></tr>
 </tbody></table>
 
 #### TableColumn Events
