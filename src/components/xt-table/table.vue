@@ -4,10 +4,15 @@
     <table class="lemon-table table-border table__header" ref="table">
       <thead>
       <tr>
-        <th v-for="(head,index) in headColumns" :key="index" class="lemon-cell" :style="columnStyle(head)">
-          <label style="color:red" v-if="isRequired(head)">*</label>
-          {{head.label}}
-        </th>
+        <template v-for="(head,index) in headColumns">
+          <th :key="index" v-if="head.type === 'selection'" class="lemon-cell" :style="columnStyle(head)">
+            <el-checkbox v-model="checked" @change="handleAllSelection"></el-checkbox>
+          </th>
+          <th :key="index" v-else class="lemon-cell" :style="columnStyle(head)">
+            <label style="color:red" v-if="isRequired(head)">*</label>
+            {{head.label}}
+          </th>
+        </template>
         <th ref="operator" class="lemon-cell" v-if="operator" :style="getOperateStyle()">操作</th>
       </tr>
       </thead>
@@ -37,11 +42,13 @@
         :tableRow="tableRow"
         :rowEditMethod="rowEditMethod"
         :rowDeleteMethod="rowDeleteMethod"
+        :selectionList="selectionList"
         @submit="handleSubmit"
         @delete="handleDelete"
         @cancel="handleCancel(tableRow.row,index,tableRow._id)"
         @edit="handleEdit"
         @click.native="handleRowClick(tableRow.row, tableRow, index, tableRow._id)"
+        @selection="handleSelection"
       ></table-row>
       <tr v-if="tableData.length===0">
         <td :colspan="headColumns.length+1" style="text-align: center">
@@ -240,6 +247,38 @@
         this.currentRow = {currentRowIndex: rowIndex, row: row, edit: this.isRowEdit(tableRow, rowIndex), rowId: rowId};
         this.$emit("row-click", row, rowIndex, tableRow);
       },
+      //选择事件
+      handleSelection(checked, row, rowIndex, rowId) { // 参数：选择正确与否
+        if (checked) {
+          if (!this.selectionList.indexOf(row) > -1) {
+            this.selectionList.push(row);
+          }
+        } else {
+          this.selectionList.remove(row);
+        }
+        this.$emit("selection-change", this.selectionList);
+      },
+      //全选事件
+      handleAllSelection() {
+        if (this.checked) {
+          this.selectionList = this.data;
+        } else {
+          this.selectionList = [];
+        }
+        this.$emit("selection-change", this.selectionList);
+      },
+      //手动设置选择
+      toggleRowSelection(row, selected = true) {
+        if (selected) {
+          if ((!this.selectionList.indexOf(row) > -1) && (!this.data.indexOf(row) > -1)) {
+            this.selectionList.push(row);
+          }
+        }
+      },
+      //用户手动取消选择
+      clearSelection() {
+        this.selectionList = [];
+      },
       //获取操作列宽度
       getOperateStyle() {
         const defaultButtons = [this.editFlag, this.successFlag, this.deleteFlag, this.cancelFlag];
@@ -277,18 +316,24 @@
         if (this.columns.length - widths.length > 0) {
           calWidth = (el.offsetWidth - totalWidth - operatorOffsetWidth) / (this.columns.length - widths.length);
           this.columns.map((column) => {
+            //如果没有设置宽度，就计算列宽度
             if (!column.width) {
-              this.$set(column, "newWidth", calWidth);
+              if (column.type === "selection") {
+                this.$set(column, "newWidth", 45);
+              } else {
+                this.$set(column, "newWidth", calWidth);
+              }
             }
           });
         }
       },
+      //获取行的信息
       mountedSlots() {
         //列属性搜集
         const columnComponents = this.$slots.default
           .filter((column) => column.componentInstance)
           .map((column) => column.componentInstance);
-        // this.columns = columnComponents.map((column) => new Column(column));
+        this.columns = columnComponents.map((column) => new Column(column));
 
         columnComponents.forEach((columnCom) => {
           Object.keys(columnCom.$options.props).forEach((prop) =>
@@ -305,7 +350,6 @@
       //  创建完成
     },
     async mounted() {
-      console.log("XtTable");
       // this.resizeListener();
       this.bindEvents();
       this.mountedSlots();
@@ -365,7 +409,9 @@
         localSettings: {},
         copyOldList: [],
         currentRow: {currentRowIndex: null, row: {}, edit: false},
-        tableKeys: []
+        tableKeys: [],
+        checked: false, //全选
+        selectionList: [] //已经选择的数据
       };
     },
     components: {

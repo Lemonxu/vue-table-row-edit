@@ -22,7 +22,7 @@ if (typeof window !== "undefined" && window.Vue) {
 }
 
 export default {
-	version: "2.0.11",
+	version: "2.0.12",
   install,
   XtInputNumber,
 	XtTable,

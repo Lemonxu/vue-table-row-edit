@@ -1,7 +1,9 @@
 <template>
   <tr @click="$emit('rowClick', row)">
-    <td v-for="column in visibleColumns" :key="column.id" :style="{'text-align': column.align}">
+    <td v-for="column in visibleColumns" :key="column.id" :style="{'text-align': column.type === 'selection'?'center':column.align}">
+      <el-checkbox v-if="column.type === 'selection'" v-model="checked" :checked="checkedStatus" @change="handleSelection"></el-checkbox>
       <table-cell
+        v-else
         :row="row"
         :rowIndex="rowIndex"
         :column="column"
@@ -85,6 +87,13 @@
           // console.log(status);
         });
       },
+      handleSelection() {
+        if (this.checked) {
+          this.$emit("selection", this.checked, this.row, this.rowIndex, this.tableRow._id);
+        } else {
+          this.$emit("selection", this.checked, this.row, this.rowIndex, this.tableRow._id);
+        }
+      },
       validate(callback) {
         this.$emit("validate", (validateState) => {
           callback(validateState);
@@ -93,6 +102,10 @@
       },
       resetFields() {
         this.$emit("resetFields");
+      },
+      //根据是否存在来更改checked状态
+      checkedChange() {
+        this.checked = this.selectionList.indexOf(this.row) > -1;
       }
     },
     mounted() {
@@ -121,11 +134,22 @@
         set() {
           //  edit状态修改
         }
+      },
+      checkedStatus: {
+        get() {
+          this.checkedChange();
+          return this.selectionList.indexOf(this.row) > -1;
+        },
+        set() {
+
+        //  修改
+        }
       }
     },
     data() {
       return {
-        edit: false
+        edit: false,
+        checked: false
       };
     },
     watch: {
@@ -179,7 +203,11 @@
         default: () => ({})
       },
       rowEditMethod: Function,
-      rowDeleteMethod: Function
+      rowDeleteMethod: Function,
+      selectionList: {
+        type: Array,
+        default: () => ([])
+      }
     }
   };
 </script>

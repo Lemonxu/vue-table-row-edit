@@ -1,7 +1,7 @@
 # vue-table-row-edit
 ---------------------------------------------------
 
-## 当前版本：v2.0.11
+## 当前版本：v2.0.12
 [更新日志](https://github.com/Lemonxu/vue-table-row-edit/releases)
 
 ------------------------------------------------------------------------------
@@ -58,14 +58,26 @@ new Vue({
                 }
               })</td></tr>
 <tr><td>resetFields</td><td>对整个表格的数据进行校验重置</td><td>this.$refs[data].resetFields();</td></tr>
+<tr><td>selection-change</td><td>当选择项发生变化时会触发该事件</td><td>selection</td>
+</tr>
 </tbody></table>
 <br/>
+
+#### Table Methods
+<table>
+<thead><tr>
+<th>方法名</th><th>说明</th><th>参数</th></tr>
+</thead><tbody>
+<tr><td>clearSelection</td><td>用于多选表格，清空用户的选择</td><td>---</td></tr>
+<tr><td>toggleRowSelection</td><td>用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）</td><td>row, selected</td></tr>
+</tbody>
+</table>
 
 #### TableColumn Attribute
 <table><thead><tr>
 <th>参数</th><th>说明</th><th>类型</th><th>可选值</th><th>默认值</th></tr></thead>
 <tbody>
-<tr><td>type</td><td>当type="operate"则写入到操作列中</td><td>String</td><td>default/operate</td><td>default</td></tr>
+<tr><td>type</td><td>对应的列类型，当type="operate"则写入到操作列中，当type="selection"则显示为多选框，当type="expand"则显示slot中的html</td><td>String</td><td>default/operate</td><td>default</td></tr>
 <tr><td>prop</td><td>对应列内容的字段名</td><td>String</td><td>---</td><td>---</td></tr>
 <tr><td>propType</td><td>对应列内容的字段类型,即行内编辑框的类型</td><td>String</td><td>input/date/number/select</td><td>input</td></tr>
 <tr><td>label</td><td>显示的标题</td><td>String</td><td>---</td><td>---</td></tr>
