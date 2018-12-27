@@ -261,7 +261,9 @@
       //全选事件
       handleAllSelection() {
         if (this.checked) {
-          this.selectionList = this.data;
+          this.tableData.map((tableRow) => {
+            this.selectionList.push(tableRow.row);
+          });
         } else {
           this.selectionList = [];
         }
@@ -344,6 +346,10 @@
             })
           );
         });
+      },
+      checkedChange() {
+        this.checked = false;
+        this.selectionList = [];
       }
     },
     created () {
@@ -377,6 +383,7 @@
       },
       tableData: {
         get() {
+          this.checkedChange();
           return this.data.map((item, index) => {
             const keyItem = {index: index, _id: Math.random()};
             const keys = this.tableKeys.find((key) => key.index === index);
