@@ -83,6 +83,9 @@
       if: {
         type: Boolean,
         default: () => true
+      },
+      selectionVisible: {
+        type: Function
       }
     },
     created() {

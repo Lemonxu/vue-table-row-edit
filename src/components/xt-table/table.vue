@@ -261,8 +261,16 @@
       //全选事件
       handleAllSelection() {
         if (this.checked) {
+          this.selectionList = [];
+          const selectionColumn = this.headColumns.find((item) => item.type === "selection");
           this.tableData.map((tableRow) => {
-            this.selectionList.push(tableRow.row);
+            let selectionRowVisible = true;
+            if (selectionColumn && selectionColumn.selectionVisible) {
+              selectionRowVisible = selectionColumn.selectionVisible(tableRow.row, selectionColumn);
+            }
+            if (selectionRowVisible) {
+              this.selectionList.push(tableRow.row);
+            }
           });
         } else {
           this.selectionList = [];

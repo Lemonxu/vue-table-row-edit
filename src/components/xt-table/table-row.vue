@@ -1,7 +1,7 @@
 <template>
   <tr @click="$emit('rowClick', row)">
     <td v-for="column in visibleColumns" :key="column.id" :style="{'text-align': column.type === 'selection'?'center':column.align}">
-      <el-checkbox v-if="column.type === 'selection'" v-model="checked" :checked="checkedStatus" @change="handleSelection"></el-checkbox>
+      <el-checkbox v-if="column.type === 'selection' && selectionRowVisible(column)" v-model="checked" :checked="checkedStatus" @change="handleSelection"></el-checkbox>
       <table-cell
         v-else
         :row="row"
@@ -34,9 +34,17 @@
 <script>
   import TableCell from "./table-cell.vue";
   import TableCellSlot from "./table-cell-slot";
+  import Bus from "./bus";
 
   export default {
     methods: {
+      //是否显示复选框
+      selectionRowVisible(column) {
+        if (column.selectionVisible) {
+          return column.selectionVisible(this.row, column);
+        }
+        return true;
+      },
       editFlagMethod() {
         if (this.rowEditMethod) {
           return this.rowEditMethod(this.row, this.edit);
