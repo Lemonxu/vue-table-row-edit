@@ -72,7 +72,7 @@ const columnStyle = (column, headerAlign = "center") => {
     width = maxWidth;
   }
   column.headStyle = {textAlign: headerAlign, width: width, minWidth: minWidth, maxWidth: maxWidth};
-  return `text-align:${headerAlign};width:${width}px;min-width:${minWidth};max-width:${maxWidth}px;`;
+  return `text-align:${headerAlign};width:${width}px;min-width:${minWidth}px;max-width:${maxWidth}px;`;
 };
 
 //表格头部显示是否必填*

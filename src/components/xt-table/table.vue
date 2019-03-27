@@ -256,6 +256,8 @@
         } else {
           this.selectionList.remove(row);
         }
+        this.checked = this.selectionList.length === this.data.length;
+        console.log(this.selectionList.length === this.data.length, "判断");
         this.$emit("selection-change", this.selectionList);
       },
       //全选事件
@@ -283,6 +285,7 @@
           if ((!this.selectionList.indexOf(row) > -1) && (!this.data.indexOf(row) > -1)) {
             this.selectionList.push(row);
           }
+          this.checked = this.selectionList.length === this.data.length;
         }
       },
       //用户手动取消选择
@@ -355,7 +358,7 @@
           );
         });
       },
-      checkedChange() {
+      checkedChange(status = false) {
         this.checked = false;
         this.selectionList = [];
       }
@@ -391,7 +394,6 @@
       },
       tableData: {
         get() {
-          this.checkedChange();
           return this.data.map((item, index) => {
             const keyItem = {index: index, _id: Math.random()};
             const keys = this.tableKeys.find((key) => key.index === index);
@@ -501,7 +503,11 @@
       emptyText: String,
       rowEditMethod: Function,
       rowDeleteMethod: Function,
-      reverse: Boolean //新增的数据在上面
+      reverse: Boolean, //新增的数据在上面
+      selectedList: {
+        type: Array,
+        default: () => []
+      } //暂时取消使用
     }
   };
 </script>
