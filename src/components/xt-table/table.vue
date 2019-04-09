@@ -95,14 +95,38 @@
           tableRowItem.resetFields && tableRowItem.resetFields();
         });
       },
+      selectResetFields() {
+        const selectionColumn = this.headColumns.find((item) => item.type === "selection");
+        if (selectionColumn) {
+          this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
+            if (!tableRowItem.checked) {
+              tableRowItem.resetFields && tableRowItem.resetFields();
+            }
+            return false;
+          });
+        }
+      },
       //整个table验证
       validate(callback) {
+        //是否存在选择
+        const selectionColumn = this.headColumns.find((item) => item.type === "selection");
         const validatorStates = [];
-        this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
-          tableRowItem.validate && tableRowItem.validate((validatorState) => {
-            validatorStates.push(validatorState);
+        if (selectionColumn) {
+          this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
+            if (tableRowItem.checked) {
+              tableRowItem.validate && tableRowItem.validate((validatorState) => {
+                validatorStates.push(validatorState);
+              });
+            }
+            return false;
           });
-        });
+        } else {
+          this.$refs.tableRow && this.$refs.tableRow.map((tableRowItem) => {
+            tableRowItem.validate && tableRowItem.validate((validatorState) => {
+              validatorStates.push(validatorState);
+            });
+          });
+        }
         const returnValidate = validatorStates.includes(false);
         if (returnValidate) {callback(false);} else {callback(true);}
       },
@@ -258,6 +282,7 @@
         }
         this.checked = this.selectionList.length === this.data.length;
         console.log(this.selectionList.length === this.data.length, "判断");
+        this.selectResetFields();
         this.$emit("selection-change", this.selectionList);
       },
       //全选事件
@@ -275,6 +300,7 @@
             }
           });
         } else {
+          this.resetFields();
           this.selectionList = [];
         }
         this.$emit("selection-change", this.selectionList);
